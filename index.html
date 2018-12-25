@@ -88,14 +88,18 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>12月25日 聖誕節快樂～<br>也是今日，第一次創建部落格資源天地，其用意是將平時工作小心得、重要記載等等，以文章方式予以記錄下來，呈現於此！</p>
+        <h1 id="12月25日-聖誕節快樂～"><a href="#12月25日-聖誕節快樂～" class="headerlink" title="12月25日 聖誕節快樂～"></a>12月25日 聖誕節快樂～</h1><p>也是今日，第一次創建部落格資源天地，其用意是將平時工作小心得、重要記載等等，以文章方式予以記錄下來，呈現於此！</p>
 <p>第一篇，就是紀錄此部落格的誕生過程～<br>在聖誕夜之前，我在 gitbook 記載了 K8s 研讀的過程與心得，也有另一篇關於公司專案 Ceph 的過程記載，但礙於 Gitbook 免付費授權條件下，只能各有一篇 public \ Private 文章，經過長期文章考量，付費條件有點稍貴，故沒選擇採購付費授權，暫且不繼續於 Gitbook 上寫文章。</p>
 <p>在聖誕夜之後，開始搜尋部落格有哪些資源可以使用，心想自己想要的條件有：串接 github 版控、支援 Markdown、無需自行架站～<br>最後選擇了蠻多人使用的 <a href="https://pages.github.com/" target="_blank" rel="noopener">github pages</a> 服務 + <a href="https://hexo.io/zh-tw/" target="_blank" rel="noopener">Hexo</a></p>
 <p>話說：在 github pages 官網上、在眾多網友上都提到 “Using Jekyll”，但自己發現該服務工具是基於 Ruby 環境上運行，但我對 Ruby 環境印象是，很耗資源，起因於 Gitlab 案例 XDD<br>在我的小 MacBook 上，希望能簡潔有力就夠～找到 Hexo 服務工具來搭配創建部落格。</p>
-<h2 id="創建紀錄"><a href="#創建紀錄" class="headerlink" title="創建紀錄"></a>創建紀錄</h2><h3 id="Github-pages-服務註冊與創建"><a href="#Github-pages-服務註冊與創建" class="headerlink" title="Github pages 服務註冊與創建"></a>Github pages 服務註冊與創建</h3><p>首先要有 Github 帳號，沒有的話當要更要先完成註冊囉～<br>依照 [官方網站](<a href="https://pages.github.com/)，依序完成" target="_blank" rel="noopener">https://pages.github.com/)，依序完成</a> repo create、git 使用介面、git clone、hello world、git push 等基本程序。</p>
+<h2 id="創建紀錄"><a href="#創建紀錄" class="headerlink" title="創建紀錄"></a>創建紀錄</h2><h3 id="Github-pages-服務註冊與創建"><a href="#Github-pages-服務註冊與創建" class="headerlink" title="Github pages 服務註冊與創建"></a>Github pages 服務註冊與創建</h3><p>首先要有 Github 帳號，沒有的話當要更要先完成註冊囉～<br>依照 [官方網站](<a href="https://pages.github.com/" target="_blank" rel="noopener">https://pages.github.com/</a>) 依序完成 <code>repo create</code>、<code>git 使用介面</code>、<code>git clone</code>、<code>hello world</code>、<code>git push</code> 等基本程序。</p>
 <p>這時候可以瀏覽你的網站，舉例我的 tksmisafu.github.io<br>tksmisafu 即為 github 帳號，目前並不能接受’非同名帳號’。</p>
-<h3 id="HEXO安裝"><a href="#HEXO安裝" class="headerlink" title="HEXO安裝"></a>HEXO安裝</h3><p>### HEXO安裝</p>
-<p>1.我選擇在自己的 MacBook 環境下進行安裝。<br>2.參考 <a href="https://hexo.io/zh-tw/docs/" target="_blank" rel="noopener">Hexo 安裝說明頁</a><br>，確認安裝需求：Node.js、Git<br>3.先安裝 NVM，再透過 NVM工具進行 Node.js<br>4.Hexo 安裝</p>
+<h3 id="HEXO安裝"><a href="#HEXO安裝" class="headerlink" title="HEXO安裝"></a>HEXO安裝</h3><ol>
+<li>我選擇在自己的 MacBook 環境下進行安裝。</li>
+<li>參考 <a href="https://hexo.io/zh-tw/docs/" target="_blank" rel="noopener">Hexo 安裝說明頁</a>，確認安裝需求：Node.js、Git</li>
+<li>先安裝 NVM，再透過 NVM工具進行 Node.js</li>
+<li>Hexo 安裝</li>
+</ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># NVM 安裝</span><br><span class="line">curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 安裝 Node.js</span><br><span class="line">nvm install stable</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 安裝 Hexo</span><br><span class="line"># 一旦所有的必備軟體都安裝完畢後，即可透過 npm 安裝 Hexo：</span><br><span class="line"></span><br><span class="line">$ npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
