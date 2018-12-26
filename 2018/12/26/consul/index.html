@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="FuFu IO">
 <meta property="og:description" content="今日首搭 Consul 服務環境，以下簡單扼要做紀錄環境說明：  Consul server mode: Ubuntu 18.04 192.168.42.12 Consul client mode: Vagrant CentOS 7 192.168.42.199  搭建 Consul server mode在 Docker 環境中，建立 Docker-composer file123456789">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-26T13:42:06.088Z">
+<meta property="og:updated_time" content="2018-12-26T13:48:03.125Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="consul">
 <meta name="twitter:description" content="今日首搭 Consul 服務環境，以下簡單扼要做紀錄環境說明：  Consul server mode: Ubuntu 18.04 192.168.42.12 Consul client mode: Vagrant CentOS 7 192.168.42.199  搭建 Consul server mode在 Docker 環境中，建立 Docker-composer file123456789">
@@ -100,7 +100,7 @@
 <p>設定配置檔案 server.json<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"datacenter"</span>: <span class="string">"Office-Lab"</span>,</span><br><span class="line">  <span class="attr">"data_dir"</span>: <span class="string">"/consul/data"</span>,</span><br><span class="line">  <span class="attr">"bootstrap_expect"</span>: <span class="number">1</span>,</span><br><span class="line">  <span class="attr">"log_level"</span>: <span class="string">"INFO"</span>,</span><br><span class="line">  <span class="attr">"node_name"</span>: <span class="string">"Afu-Lab2"</span>,</span><br><span class="line">  <span class="attr">"server"</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">"bind_addr"</span>: <span class="string">"0.0.0.0"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>啟動 consul 服務<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker-compose -f consul-docker-compose.yml up -d</span><br></pre></td></tr></table></figure></p>
 <p>查看 Consul Web 介面 <a href="http://server-ip:8500" target="_blank" rel="noopener">http://server-ip:8500</a></p>
-<p>啟動 server mode 遇到問題，記錄如下：</p>
+<p><strong>啟動 server mode 遇到問題，記錄如下：</strong></p>
 <ul>
 <li>server agent log 顯示：<br><code>[ERR] agent: failed to sync remote state: No cluster leader</code><ul>
 <li>原因：這是環境中第一台 Consul server node，需要藉由 <code>-bootstrap-expect=1</code> 作為初始引導方式。</li>
@@ -114,8 +114,14 @@
 </li>
 </ul>
 <ul>
-<li>server agent log 顯示：<br><code>[ERR] memberlist: Failed push/pull merge: Member &#39;C7-java&#39; part of wrong datacenter &#39;dc1&#39; from=192.168.42.199:49356</code><ul>
+<li><p>server agent log 顯示：<br><code>[ERR] memberlist: Failed push/pull merge: Member &#39;C7-java&#39; part of wrong datacenter &#39;dc1&#39; from=192.168.42.199:49356</code></p>
+<ul>
 <li>原因：這顯示 <code>Member &#39;C7-java&#39;</code> 啟動時，採用預設參數 <code>datacenter &#39;dc1&#39;</code>，只需在 member 端啟用時新增參數 <code>-datacenter=office-lab</code> 即可。</li>
+</ul>
+</li>
+<li><p>Client agent log 顯示：<br><code>Multiple private IPv4 addresses found. Please configure one with &#39;bind&#39; and/or &#39;advertise&#39;.</code></p>
+<ul>
+<li>原因：這是因為 node 網路具備兩個以上的網路IP，故必須配置其中一個網卡 IP。</li>
 </ul>
 </li>
 </ul>
