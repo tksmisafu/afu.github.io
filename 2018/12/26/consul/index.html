@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="FuFu IO">
 <meta property="og:description" content="今日首搭 Consul 服務環境，以下簡單扼要做紀錄環境說明：  Consul server mode: Ubuntu 18.04 192.168.42.12 Consul client mode: Vagrant CentOS 7 192.168.42.199  搭建 Consul server mode在 Docker 環境中，建立 Docker-composer file123456789">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-26T13:26:38.965Z">
+<meta property="og:updated_time" content="2018-12-26T13:33:52.023Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="consul">
 <meta name="twitter:description" content="今日首搭 Consul 服務環境，以下簡單扼要做紀錄環境說明：  Consul server mode: Ubuntu 18.04 192.168.42.12 Consul client mode: Vagrant CentOS 7 192.168.42.199  搭建 Consul server mode在 Docker 環境中，建立 Docker-composer file123456789">
@@ -101,24 +101,23 @@
 <p>啟動 consul 服務<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker-compose -f consul-docker-compose.yml up -d</span><br></pre></td></tr></table></figure></p>
 <p>查看 Consul Web 介面 <a href="http://server-ip:8500" target="_blank" rel="noopener">http://server-ip:8500</a></p>
 <p>啟動 server mode 遇到問題，記錄如下：</p>
+<blockquote>
+<p>server agent log 顯示：[ERR] agent: failed to sync remote state: No cluster leader<br>原因：這是環境中第一台 Consul server node，需要藉由 <code>-bootstrap-expect=1</code> 作為初始引導方式。</p>
+</blockquote>
+<blockquote>
+<p>server agent log 顯示：<br>Client Addr: [127.0.0.1] (HTTP: 8500, HTTPS: -1, gRPC: -1, DNS: 8600)<br>Cluster Addr: 192.168.42.12 (LAN: 8301, WAN: 8302)</p>
+<blockquote>
+<p>原因：agent 預設服務綁定於 <code>localhost</code> 介面上，故需要運用參數 <code>-client=0.0.0.0</code> 進行調整。</p>
+</blockquote>
+</blockquote>
 <ul>
-<li><p>server agent log 顯示：[ERR] agent: failed to sync remote state: No cluster leader</p>
-<ul>
-<li>原因：這是環境中第一台 Consul server node，需要藉由 <code>-bootstrap-expect=1</code> 作為初始引導方式。</li>
-</ul>
-</li>
-<li><p>server agent log 顯示：<br>Client Addr: [127.0.0.1] (HTTP: 8500, HTTPS: -1, gRPC: -1, DNS: 8600)<br>Cluster Addr: 192.168.42.12 (LAN: 8301, WAN: 8302)</p>
-<ul>
-<li>原因：agent 預設服務綁定於 <code>localhost</code> 介面上，故需要運用參數 <code>-client=0.0.0.0</code> 進行調整。</li>
-</ul>
-</li>
-<li><p>server agent log 顯示：<br><code>[ERR] memberlist: Failed push/pull merge: Member &#39;C7-java&#39; part of wrong datacenter &#39;dc1&#39; from=192.168.42.199:49356</code></p>
-<ul>
+<li>server agent log 顯示：<br><code>[ERR] memberlist: Failed push/pull merge: Member &#39;C7-java&#39; part of wrong datacenter &#39;dc1&#39; from=192.168.42.199:49356</code><ul>
 <li>原因：這顯示 <code>Member &#39;C7-java&#39;</code> 啟動時，採用預設參數 <code>datacenter &#39;dc1&#39;</code>，只需在 member 端啟用時新增參數 <code>-datacenter=office-lab</code> 即可。</li>
 </ul>
 </li>
 </ul>
 <p>備註：<br>如果不選擇 Docker 啟用 Consul server 服務，可以試試指令啟用，方式如下<br>啟用 Consul agent server<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo consul agent -server -bootstrap-expect=1 -node=Afu-Lab2 -<span class="built_in">enable</span>-local-script-checks=<span class="literal">true</span> -config-dir=/etc/consul.d -data-dir=/tmp/consul -<span class="built_in">bind</span>=0.0.0.0 -client=0.0.0.0</span><br></pre></td></tr></table></figure></p>
+<hr>
 <h2 id="搭建-Consul-client-mode"><a href="#搭建-Consul-client-mode" class="headerlink" title="搭建 Consul client mode"></a>搭建 Consul client mode</h2><p>在 CentOS 7 環境下，<a href="https://www.consul.io/downloads.html" target="_blank" rel="noopener">下載官方</a> Binary file<br>解壓縮後，移至 <code>/usr/bin</code> 目錄下</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://releases.hashicorp.com/consul/1.4.0/consul_1.4.0_linux_amd64.zip</span><br><span class="line">unzip consul_1.4.0_linux_amd64.zip</span><br><span class="line">sudo mv consul /usr/bin/</span><br></pre></td></tr></table></figure>
 <p>驗證執行<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ consul -v</span><br><span class="line">Consul v1.4.0</span><br><span class="line">Protocol 2 spoken by default, understands 2 to 3 (agent will automatically use protocol &gt;2 when speaking to compatible agents)</span><br></pre></td></tr></table></figure></p>
@@ -136,7 +135,9 @@
 </ul>
 </li>
 </ul>
+<blockquote>
 <p>備註：以上相關配置參數，可參考<a href="https://www.consul.io/docs/agent/options.html" target="_blank" rel="noopener">官網說明</a></p>
+</blockquote>
 
       
     </div>
