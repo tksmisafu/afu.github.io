@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="FuFu IO">
 <meta property="og:description" content="今日首搭 Consul 服務環境，以下簡單扼要做紀錄環境說明：  Consul server mode: Ubuntu 18.04 192.168.42.12 Consul client mode: Vagrant CentOS 7 192.168.42.199  搭建 Consul server mode在 Docker 環境中，建立 Docker-composer file123456789">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-26T13:15:56.685Z">
+<meta property="og:updated_time" content="2018-12-26T13:25:09.115Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="consul">
 <meta name="twitter:description" content="今日首搭 Consul 服務環境，以下簡單扼要做紀錄環境說明：  Consul server mode: Ubuntu 18.04 192.168.42.12 Consul client mode: Vagrant CentOS 7 192.168.42.199  搭建 Consul server mode在 Docker 環境中，建立 Docker-composer file123456789">
@@ -112,7 +112,7 @@
 <li>原因：agent 預設服務綁定於 <code>localhost</code> 介面上，故需要運用參數 <code>-client=0.0.0.0</code> 進行調整。</li>
 </ul>
 </li>
-<li><p>server agent log 顯示：<br>[ERR] memberlist: Failed push/pull merge: Member ‘C7-java’ part of wrong datacenter ‘dc1’ from=192.168.42.199:49356</p>
+<li><p>server agent log 顯示：<br><code>[ERR] memberlist: Failed push/pull merge: Member &#39;C7-java&#39; part of wrong datacenter &#39;dc1&#39; from=192.168.42.199:49356</code></p>
 <ul>
 <li>原因：這顯示 <code>Member &#39;C7-java&#39;</code> 啟動時，採用預設參數 <code>datacenter &#39;dc1&#39;</code>，只需在 member 端啟用時新增參數 <code>-datacenter=office-lab</code> 即可。</li>
 </ul>
@@ -129,7 +129,7 @@
 <p>啟用 Consul agent <a href="https://learn.hashicorp.com/consul/getting-started/join#starting-the-agents" target="_blank" rel="noopener">官方教學網址</a></p>
 <h4 id="啟用-Consul-agent-client-mode"><a href="#啟用-Consul-agent-client-mode" class="headerlink" title="啟用 Consul agent client mode"></a>啟用 Consul agent client mode</h4><p>啟用指令：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">consul agent -client=0.0.0.0 -node=C7-java \</span><br><span class="line">  -join=192.168.42.12 -<span class="built_in">bind</span>=192.168.42.199 \</span><br><span class="line">  -<span class="built_in">enable</span>-local-script-checks=<span class="literal">true</span> -data-dir=/tmp/consul \</span><br><span class="line">  -config-dir=/etc/consul.d -datacenter=office-lab</span><br></pre></td></tr></table></figure></p>
 <p>啟用後，會有三個新 Listen port：<code>8301、8500、8600</code></p>
-<p>在查看一次 Consul Web 介面 <a href="http://server-ip:8500，即可發現" target="_blank" rel="noopener">http://server-ip:8500，即可發現</a> Nodes、Health Checks 的變化。</p>
+<p>在查看一次 Consul Web 介面 <code>http://server-ip:8500</code>，即可發現 <code>Nodes、Health Checks</code> 的變化。</p>
 <ul>
 <li>Client agent log 顯示：<br><code>Multiple private IPv4 addresses found. Please configure one with &#39;bind&#39; and/or &#39;advertise&#39;.</code><ul>
 <li>原因：這是因為 node 網路具備兩個以上的網路IP，故必須配置其中一個網卡 IP。</li>
