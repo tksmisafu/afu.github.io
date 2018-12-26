@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="FuFu IO">
 <meta property="og:description" content="今日首搭 Consul 服務環境，以下簡單扼要做紀錄環境說明：  Consul server mode: Ubuntu 18.04 192.168.42.12 Consul client mode: Vagrant CentOS 7 192.168.42.199  搭建 Consul server mode在 Docker 環境中，建立 Docker-composer file123456789">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-26T13:48:03.125Z">
+<meta property="og:updated_time" content="2018-12-26T13:54:03.568Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="consul">
 <meta name="twitter:description" content="今日首搭 Consul 服務環境，以下簡單扼要做紀錄環境說明：  Consul server mode: Ubuntu 18.04 192.168.42.12 Consul client mode: Vagrant CentOS 7 192.168.42.199  搭建 Consul server mode在 Docker 環境中，建立 Docker-composer file123456789">
@@ -114,18 +114,12 @@
 </li>
 </ul>
 <ul>
-<li><p>server agent log 顯示：<br><code>[ERR] memberlist: Failed push/pull merge: Member &#39;C7-java&#39; part of wrong datacenter &#39;dc1&#39; from=192.168.42.199:49356</code></p>
-<ul>
-<li>原因：這顯示 <code>Member &#39;C7-java&#39;</code> 啟動時，採用預設參數 <code>datacenter &#39;dc1&#39;</code>，只需在 member 端啟用時新增參數 <code>-datacenter=office-lab</code> 即可。</li>
-</ul>
-</li>
-<li><p>Client agent log 顯示：<br><code>Multiple private IPv4 addresses found. Please configure one with &#39;bind&#39; and/or &#39;advertise&#39;.</code></p>
-<ul>
-<li>原因：這是因為 node 網路具備兩個以上的網路IP，故必須配置其中一個網卡 IP。</li>
+<li>server agent log 顯示：<br><code>[ERR] memberlist: Failed push/pull merge: Member &#39;C7-java&#39; part of wrong datacenter &#39;dc1&#39; from=192.168.42.199:49356</code><ul>
+<li>原因：這顯示 <code>Member &#39;C7-java&#39;</code> 啟動時，採用預設參數 <code>datacenter &#39;dc1&#39;</code> ，只需在 member 端啟用時新增參數 <code>-datacenter=office-lab</code> 即可。</li>
 </ul>
 </li>
 </ul>
-<p>備註：<br>如果不選擇 Docker 啟用 Consul server 服務，可以試試指令啟用，方式如下<br>啟用 Consul agent server<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo consul agent -server -bootstrap-expect=1 -node=Afu-Lab2 -<span class="built_in">enable</span>-local-script-checks=<span class="literal">true</span> -config-dir=/etc/consul.d -data-dir=/tmp/consul -<span class="built_in">bind</span>=0.0.0.0 -client=0.0.0.0</span><br></pre></td></tr></table></figure></p>
+<p><strong>備註：</strong><br>如果不選擇 Docker 啟用 Consul server 服務，可以試試指令啟用，方式如下<br>啟用 Consul agent server<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo consul agent -server -bootstrap-expect=1 -node=Afu-Lab2 -<span class="built_in">enable</span>-local-script-checks=<span class="literal">true</span> -config-dir=/etc/consul.d -data-dir=/tmp/consul -<span class="built_in">bind</span>=0.0.0.0 -client=0.0.0.0</span><br></pre></td></tr></table></figure></p>
 <hr>
 <h2 id="搭建-Consul-client-mode"><a href="#搭建-Consul-client-mode" class="headerlink" title="搭建 Consul client mode"></a>搭建 Consul client mode</h2><p>在 CentOS 7 環境下，<a href="https://www.consul.io/downloads.html" target="_blank" rel="noopener">下載官方</a> Binary file<br>解壓縮後，移至 <code>/usr/bin</code> 目錄下</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://releases.hashicorp.com/consul/1.4.0/consul_1.4.0_linux_amd64.zip</span><br><span class="line">unzip consul_1.4.0_linux_amd64.zip</span><br><span class="line">sudo mv consul /usr/bin/</span><br></pre></td></tr></table></figure>
@@ -144,9 +138,7 @@
 </ul>
 </li>
 </ul>
-<blockquote>
-<p>備註：以上相關配置參數，可參考<a href="https://www.consul.io/docs/agent/options.html" target="_blank" rel="noopener">官網說明</a></p>
-</blockquote>
+<p><strong>備註：</strong><br>以上相關配置參數，可參考<a href="https://www.consul.io/docs/agent/options.html" target="_blank" rel="noopener">官網說明</a></p>
 
       
     </div>
