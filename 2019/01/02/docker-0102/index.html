@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>用 docker 架設 php 平台 | FuFu IO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="這幾日，接到一個需求要架設基於 php 的專案軟體因為僅是 demo 用途，故直接想到用 docker 架設此環境。 架設此環境，所需資源有三：PHP、Nginx、MySQL過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。相對 Nginx &amp;amp; MySQL docker image">
+<meta name="keywords" content="docker、php">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 docker 架設 php 平台">
+<meta property="og:url" content="http://tksmisafu.github.io/2019/01/02/docker-0102/index.html">
+<meta property="og:site_name" content="FuFu IO">
+<meta property="og:description" content="這幾日，接到一個需求要架設基於 php 的專案軟體因為僅是 demo 用途，故直接想到用 docker 架設此環境。 架設此環境，所需資源有三：PHP、Nginx、MySQL過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。相對 Nginx &amp;amp; MySQL docker image">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-01-02T14:16:42.818Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用 docker 架設 php 平台">
+<meta name="twitter:description" content="這幾日，接到一個需求要架設基於 php 的專案軟體因為僅是 demo 用途，故直接想到用 docker 架設此環境。 架設此環境，所需資源有三：PHP、Nginx、MySQL過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。相對 Nginx &amp;amp; MySQL docker image">
+  
+    <link rel="alternate" href="/atom.xml" title="FuFu IO" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">FuFu IO</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://tksmisafu.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-docker-0102" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/02/docker-0102/" class="article-date">
+  <time datetime="2019-01-02T14:16:42.000Z" itemprop="datePublished">2019-01-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      用 docker 架設 php 平台
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>這幾日，接到一個需求要架設基於 php 的專案軟體<br>因為僅是 demo 用途，故直接想到用 docker 架設此環境。</p>
+<p>架設此環境，所需資源有三：PHP、Nginx、MySQL<br>過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。<br>相對 Nginx &amp; MySQL docker images 部分，則使用官方資訊下載使用即可。<br><a href="https://hub.docker.com/_/nginx/" target="_blank" rel="noopener">官方 Nginx image</a><br><a href="https://hub.docker.com/_/mysql/" target="_blank" rel="noopener">官方 MySQL image</a></p>
+<p>經過專案探尋與瞭解，也確認了需要的 php extension 清單，<br>基於<a href="https://hub.docker.com/_/php/" target="_blank" rel="noopener">官方 php image</a>，加上 <code>php extension</code> 需求，撰寫 <code>PHP Dockerfile</code> 如下：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> php:<span class="number">5.6</span>-fpm</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span> apt-get update \</span><br><span class="line">  &amp;&amp; apt-get install -y \</span><br><span class="line">        libfreetype6-dev \</span><br><span class="line">        libjpeg62-turbo-dev \</span><br><span class="line">        libpng-dev \</span><br><span class="line">        libmcrypt-dev \</span><br><span class="line">  &amp;&amp; docker-php-ext-install -j$(nproc) iconv \</span><br><span class="line">  &amp;&amp; docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \</span><br><span class="line">  &amp;&amp; docker-php-ext-install -j$(nproc) gd</span><br><span class="line"></span><br><span class="line">RUN docker-php-ext-install mysql mysqli pdo pdo_mysql mbstring mcrypt sockets</span><br></pre></td></tr></table></figure>
+<p>php 專案中，基本上都需要用上 composer 指令，進行專案初始化<br>可使用<a href="https://hub.docker.com/_/composer/" target="_blank" rel="noopener">官方 composer</a>，並且也需要搭配 <code>php extension</code> 需求，撰寫 <code>PHP Dockerfile</code> 如下：<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> composer</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span> apk upgrade --update &amp;&amp; \</span><br><span class="line">    apk --no-cache add libmcrypt-dev mysql-client libpng-dev $PHPIZE_DEPS \</span><br><span class="line">    &amp;&amp; pecl install mcrypt-1.0.1 \</span><br><span class="line">    &amp;&amp; docker-php-ext-enable mcrypt</span><br><span class="line"></span><br><span class="line">RUN docker-php-ext-install -j$(nproc) gd mysqli</span><br><span class="line">RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql iconv mbstring sockets</span><br><span class="line"></span><br><span class="line">WORKDIR /app</span><br><span class="line"></span><br><span class="line">ENTRYPOINT ["/bin/sh", "/docker-entrypoint.sh"]</span><br><span class="line"></span><br><span class="line">CMD ["composer"]</span><br></pre></td></tr></table></figure></p>
+<p>撰寫後，進行 docker build 工作<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># docker build 指令</span></span><br><span class="line">docker build -t tag-name ./</span><br></pre></td></tr></table></figure></p>
+<p>寫此篇其最主要紀錄的是過程中的問題概要，留下紀錄作為後續回顧。</p>
+<h3 id="問題回顧"><a href="#問題回顧" class="headerlink" title="問題回顧"></a>問題回顧</h3><ol>
+<li><p>遇到問題：<br><code>Cannot find autoconf. Please check your autoconf installation and the 
+$PHP_AUTOCONF environment variable. Then, rerun this script.
+ERROR: &#39;phpize&#39; failed</code></p>
+<ol>
+<li>解法：<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">RUN</span><span class="bash"> apk --no-cache add <span class="variable">$PHPIZE_DEPS</span></span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+<li><p>遇到問題：執行 composer install or create-project 時，出現錯誤訊息：<code>requested PHP extension mcrypt is missing from your system</code></p>
+<ol start="2">
+<li>解法：其 docker image 缺少 PHP extension mcrypt ，所以需要<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">RUN</span><span class="bash"> pecl install mcrypt-1.0.1</span></span><br><span class="line"><span class="bash">RUN docker-php-ext-enable mcrypt</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+<li><p>在執行專案時，遇到 php 問題：<code>PHP Fatal error:  Call to undefined function imagettftext()</code></p>
+<ol start="3">
+<li>解法：因 imagettftext 功能相依 GD &amp; FreeType，然而其 php extension GD 沒啟用 freetype 功能而出現此問題，在 dockerfile php 中啟用方式如下<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">RUN</span><span class="bash"> docker-php-ext-install -j$(nproc) iconv</span></span><br><span class="line"><span class="bash">RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/</span></span><br><span class="line"><span class="bash">RUN docker-php-ext-install -j$(nproc) gd</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://tksmisafu.github.io/2019/01/02/docker-0102/" data-id="cjqf9mhkn0000fpxhwwbspb2r" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker、php/">docker、php</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/12/26/consul/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">consul</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker、php/">docker、php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/docker、php/" style="font-size: 10px;">docker、php</a> <a href="/tags/service-discovery/" style="font-size: 10px;">service_discovery</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/01/02/docker-0102/">用 docker 架設 php 平台</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/26/consul/">consul</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/26/new-blog/">new-blog</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/25/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
