@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="FuFu IO">
 <meta property="og:description" content="這幾日，接到一個需求要架設基於 php 的專案軟體因為僅是 demo 用途，故直接想到用 docker 架設此環境。 架設此環境，所需資源有三：PHP、Nginx、MySQL過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。相對 Nginx &amp;amp; MySQL docker image">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-01-02T14:22:22.116Z">
+<meta property="og:updated_time" content="2019-01-02T14:25:56.131Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="用 docker 架設 php 平台">
 <meta name="twitter:description" content="這幾日，接到一個需求要架設基於 php 的專案軟體因為僅是 demo 用途，故直接想到用 docker 架設此環境。 架設此環境，所需資源有三：PHP、Nginx、MySQL過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。相對 Nginx &amp;amp; MySQL docker image">
@@ -98,22 +98,22 @@
 <li><p>遇到問題：<br><code>Cannot find autoconf. Please check your autoconf installation and the 
 $PHP_AUTOCONF environment variable. Then, rerun this script.
 ERROR: &#39;phpize&#39; failed</code></p>
-<ol>
+<ul>
 <li>解法：<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">RUN</span><span class="bash"> apk --no-cache add <span class="variable">$PHPIZE_DEPS</span></span></span><br></pre></td></tr></table></figure>
 </li>
-</ol>
+</ul>
 </li>
 <li><p>遇到問題：執行 composer install or create-project 時，出現錯誤訊息：<code>requested PHP extension mcrypt is missing from your system</code></p>
-<ol start="2">
+<ul>
 <li>解法：其 docker image 缺少 PHP extension mcrypt ，所以需要<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">RUN</span><span class="bash"> pecl install mcrypt-1.0.1</span></span><br><span class="line"><span class="bash">RUN docker-php-ext-enable mcrypt</span></span><br></pre></td></tr></table></figure>
 </li>
-</ol>
+</ul>
 </li>
 <li><p>在執行專案時，遇到 php 問題：<code>PHP Fatal error:  Call to undefined function imagettftext()</code></p>
-<ol start="3">
+<ul>
 <li>解法：因 imagettftext 功能相依 GD &amp; FreeType，然而其 php extension GD 沒啟用 freetype 功能而出現此問題，在 dockerfile php 中啟用方式如下<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">RUN</span><span class="bash"> docker-php-ext-install -j$(nproc) iconv</span></span><br><span class="line"><span class="bash">RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/</span></span><br><span class="line"><span class="bash">RUN docker-php-ext-install -j$(nproc) gd</span></span><br></pre></td></tr></table></figure>
 </li>
-</ol>
+</ul>
 </li>
 </ol>
 
