@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>CD-第十章節心得-1 | FuFu IO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="第十章節：持續部署持續部署 P.267 ~合乎「持續部署」邏輯的極限。就是每當有版本通過自動化測試，就將其部署到生產環境中，這是由 Timothy Fitz 先生創造的專業術語。一直進行部署，也不是說只要願意就進行部署，關鍵點還是在於完成自動化測試，並且持續部署到生產環境中。 透過部署流水線，讓每次提交的程式通過了全部的自動化測試，就應該直接部署到生產環境中。如果想讓這做法不出問題，各種自動化測試">
+<meta name="keywords" content="CD">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CD-第十章節心得-1">
+<meta property="og:url" content="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/index.html">
+<meta property="og:site_name" content="FuFu IO">
+<meta property="og:description" content="第十章節：持續部署持續部署 P.267 ~合乎「持續部署」邏輯的極限。就是每當有版本通過自動化測試，就將其部署到生產環境中，這是由 Timothy Fitz 先生創造的專業術語。一直進行部署，也不是說只要願意就進行部署，關鍵點還是在於完成自動化測試，並且持續部署到生產環境中。 透過部署流水線，讓每次提交的程式通過了全部的自動化測試，就應該直接部署到生產環境中。如果想讓這做法不出問題，各種自動化測試">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/.gitbook/assets/jin-si-que.jpeg">
+<meta property="og:updated_time" content="2019-01-03T09:49:08.406Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CD-第十章節心得-1">
+<meta name="twitter:description" content="第十章節：持續部署持續部署 P.267 ~合乎「持續部署」邏輯的極限。就是每當有版本通過自動化測試，就將其部署到生產環境中，這是由 Timothy Fitz 先生創造的專業術語。一直進行部署，也不是說只要願意就進行部署，關鍵點還是在於完成自動化測試，並且持續部署到生產環境中。 透過部署流水線，讓每次提交的程式通過了全部的自動化測試，就應該直接部署到生產環境中。如果想讓這做法不出問題，各種自動化測試">
+<meta name="twitter:image" content="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/.gitbook/assets/jin-si-que.jpeg">
+  
+    <link rel="alternate" href="/atom.xml" title="FuFu IO" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">FuFu IO</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://tksmisafu.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-kcd-10chapter-1" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/03/kcd-10chapter-1/" class="article-date">
+  <time datetime="2019-01-03T09:37:37.000Z" itemprop="datePublished">2019-01-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CD-第十章節心得-1
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="第十章節：持續部署"><a href="#第十章節：持續部署" class="headerlink" title="第十章節：持續部署"></a>第十章節：持續部署</h1><h3 id="持續部署-P-267"><a href="#持續部署-P-267" class="headerlink" title="持續部署 P.267 ~"></a>持續部署 P.267 ~</h3><p>合乎「持續部署」邏輯的極限。就是每當有版本通過自動化測試，就將其部署到生產環境中，<br>這是由 Timothy Fitz 先生創造的專業術語。<br>一直進行部署，也不是說只要願意就進行部署，關鍵點還是在於完成自動化測試，並且持續部署到生產環境中。</p>
+<p>透過部署流水線，讓每次提交的程式通過了全部的自動化測試，就應該直接部署到生產環境中。如果想讓這做法不出問題，各種自動化測試就必須覆蓋整個應用程式。</p>
+<blockquote><p>自動化測試項目：單元測試、元件測試、功能性測試、非功能性驗收測試。</p>
+</blockquote>
+<h4 id="多帶著這隻鳥跟著持續部署計畫前進，會有助於版本正確性更加有信心，問題風險控管更加有利。"><a href="#多帶著這隻鳥跟著持續部署計畫前進，會有助於版本正確性更加有信心，問題風險控管更加有利。" class="headerlink" title="多帶著這隻鳥跟著持續部署計畫前進，會有助於版本正確性更加有信心，問題風險控管更加有利。"></a>多帶著這隻鳥跟著持續部署計畫前進，會有助於版本正確性更加有信心，問題風險控管更加有利。</h4><p><img src=".gitbook/assets/jin-si-que.jpeg" alt=""></p>
+<p>總是有人反對持續部署，總是擔心風險太高～<br>反過來，運用持續部署流程，會更加有助於團隊成員迫使自己做出正確的事。<br>做出正確的事情越頻繁，效率越高，也是減少風險的絕佳方式。</p>
+<h4 id="持續發佈使用者需自行安裝的軟體-P-269"><a href="#持續發佈使用者需自行安裝的軟體-P-269" class="headerlink" title="持續發佈使用者需自行安裝的軟體 P.269 ~"></a>持續發佈使用者需自行安裝的軟體 P.269 ~</h4><p>軟體開發後，發佈在自己公司平台上，好不好管理？<br>軟體開發後，發佈在他人資訊平台上，好不好管理？<br><strong>根本就是不同的管理思維～</strong><br>需要考慮：</p>
+<ol>
+<li><strong>管理眾多的版本、歷程、平台載具</strong></li>
+<li><strong>升級是否自動化、是否通知、是否前景下升級</strong></li>
+<li><strong>升級前的條件檢查</strong></li>
+<li><strong>升級失敗後的退版方案</strong></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><strong>Stable release(s)</strong></th>
+<th style="text-align:left">Versions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Windows</td>
+<td style="text-align:left">70.0.3538.67 / October 16, 2018; 7 days ago[1]</td>
+</tr>
+<tr>
+<td style="text-align:center">macOS</td>
+<td style="text-align:left">70.0.3538.64 / October 17, 2018; 6 days ago[2]</td>
+</tr>
+<tr>
+<td style="text-align:center">Linux Android iOS</td>
+<td style="text-align:left">70.0.3538.75 / October 23, 2018; 0 days ago[3]</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Preview release(s)</th>
+<th style="text-align:left">Versions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Beta (Windows, macOS, Linux)</td>
+<td style="text-align:left">70.0.3538.67 / October 16, 2018; 7 days ago[4]</td>
+</tr>
+<tr>
+<td style="text-align:left">Beta (Android)</td>
+<td style="text-align:left">70.0.3538.64 / October 15, 2018; 8 days ago[5]</td>
+</tr>
+<tr>
+<td style="text-align:left">Beta (iOS)</td>
+<td style="text-align:left">71.0.3578.14 / October 19, 2018; 4 days ago[6]</td>
+</tr>
+<tr>
+<td style="text-align:left">Dev (Windows, macOS, Linux)</td>
+<td style="text-align:left">71.0.3578.20 / October 23, 2018; 0 days ago[7]</td>
+</tr>
+<tr>
+<td style="text-align:left">Dev (Android)</td>
+<td style="text-align:left">71.0.3578.12 / October 18, 2018; 5 days ago[6]</td>
+</tr>
+<tr>
+<td style="text-align:left">Dev (iOS)</td>
+<td style="text-align:left">72.0.3585.0 / October 23, 2018; 0 days ago[6]</td>
+</tr>
+<tr>
+<td style="text-align:left">Canary (Windows, macOS)</td>
+<td style="text-align:left">72.0.3589.0 / October 23, 2018; 0 days ago[6]</td>
+</tr>
+<tr>
+<td style="text-align:left">Canary (Android)</td>
+<td style="text-align:left">72.0.3589.0 / October 23, 2018; 0 days ago[6]</td>
+</tr>
+</tbody>
+</table>
+<p>對於升級這件事情，使用者可能不了解甚至不想進行“升級”，如果沒有提供有益的升級資訊，通常很難帶動升級潮 XD</p>
+<blockquote><p>此時想到，Apple 都會告知大家，iPhone \ MacBook 有多好有多讚～ 來波升級換機潮吧！！！</p>
+</blockquote>
+<p>心態學：如果開發團隊沒有完整的測試、發佈流程，對軟體推向市場膽戰心驚，那何況又要如何說服客戶進行升級呢～</p>
+<p>為了提供一個堅如磐石的升級過程，會需要處理binary、資料和配置資訊的遷移工作。只要是升級完成之前，應該要保留一份舊版本的副本區，以備更新失敗時，也要能夠悄悄的恢復原本良好狀態。</p>
+<p>最後，如果是客戶需自行安裝軟體的模式，關鍵在於能夠把錯誤報告回傳給開發團隊。<br>內容或許描述了相處不愉快的事件，例如資源不足、系統與程式碼不相容等等</p>
+<h3 id="提示與技巧-P-271"><a href="#提示與技巧-P-271" class="headerlink" title="提示與技巧 P.271 ~"></a>提示與技巧 P.271 ~</h3>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/" data-id="cjqgf38ge00051gxh73w2gfia" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CD/">CD</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/01/02/docker-0102/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">用 docker 架設 php 平台</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CD/" style="font-size: 10px;">CD</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service-discovery/" style="font-size: 10px;">service_discovery</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/01/03/kcd-10chapter-1/">CD-第十章節心得-1</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/02/docker-0102/">用 docker 架設 php 平台</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/26/consul/">consul</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/26/new-blog/">new-blog</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/25/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
