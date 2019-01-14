@@ -62,6 +62,95 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-centos7-install-k8s" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/14/centos7-install-k8s/" class="article-date">
+  <time datetime="2019-01-14T07:07:02.000Z" itemprop="datePublished">2019-01-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/14/centos7-install-k8s/">CentOS 7 上安裝 K8s 自家練習環境</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>先前，我搭建過乙次 K8s + CRI-O 環境，記錄於下列三篇文章中～<br><a href="https://fufu.gitbook.io/kk8s/installing-kubeadm" target="_blank" rel="noopener">文章一</a><br><a href="https://fufu.gitbook.io/kk8s/installing-crio-kubeadm-init" target="_blank" rel="noopener">文章二</a><br><a href="https://fufu.gitbook.io/kk8s/fix-kubelet-kubeadm-init" target="_blank" rel="noopener">文章三</a><br><a href="https://fufu.gitbook.io/kk8s/installing-a-pod-network-add-on" target="_blank" rel="noopener">文章四</a><br><a href="https://fufu.gitbook.io/kk8s/k8s-add-nodes-join" target="_blank" rel="noopener">文章五</a></p>
+<p>此次，基於上次的經驗，建構公司要使用的 Lab 環境，<br>也為了簡單化，CRI 部分先採用大家熟悉的 Docker。<br>安裝過程，主要也是參照官網說明頁，不再另外記載～<br><code>~貼上去於此，就沒有什麼意思~</code><br>如有注意事項或者錯誤資訊，會在下面記載下來。</p>
+<h1 id="K8s-基本環境安裝"><a href="#K8s-基本環境安裝" class="headerlink" title="K8s 基本環境安裝"></a>K8s 基本環境安裝</h1><p>安裝有下列三步驟：</p>
+<ol start="0">
+<li><p>安裝的準備</p>
+<ul>
+<li>進行之前，得先關閉 SWAP～</li>
+<li>確認 SELinux in permissive mode</li>
+<li>配置與生效系統參數 /etc/sysctl.d/k8s.conf<ul>
+<li>net.bridge.bridge-nf-call-ip6tables = 1</li>
+<li>net.bridge.bridge-nf-call-iptables = 1</li>
+<li>net.ipv4.ip_forward = 1</li>
+<li>vm.swappiness = 0</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>先安裝 CRI 元件，這次選擇 Docker<br>參考此<a href="https://kubernetes.io/docs/setup/cri/#docker" target="_blank" rel="noopener">官網說明頁</a></p>
+</li>
+<li><p>安裝 <code>kubeadm, kubelet and kubectl</code><br>參考此<a href="https://kubernetes.io/docs/setup/independent/install-kubeadm/#verify-the-mac-address-and-product-uuid-are-unique-for-every-node" target="_blank" rel="noopener">官網說明頁</a></p>
+</li>
+</ol>
+<h3 id="注意事項："><a href="#注意事項：" class="headerlink" title="注意事項："></a>注意事項：</h3><ul>
+<li>啟用後，kubelet 仍是沒順利啟用，錯誤訊息如下：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Jan 10 18:20:40 dev-k8sm1 kubelet: F0110 18:20:40.118057   40783 server.go:189] failed to load Kubelet config file /var/lib/kubelet/config.yaml, error failed to <span class="built_in">read</span> kubelet config file <span class="string">"/var/lib/kubelet/config.yaml"</span>, error: open /var/lib/kubelet/config.yaml: no such file or directory</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="稍後進行-kubeadm-init-之後，即會產生此檔案-var-lib-kubelet-config-yaml，而且此服務會自行重啟，直到成功。"><a href="#稍後進行-kubeadm-init-之後，即會產生此檔案-var-lib-kubelet-config-yaml，而且此服務會自行重啟，直到成功。" class="headerlink" title="稍後進行 kubeadm init 之後，即會產生此檔案 /var/lib/kubelet/config.yaml，而且此服務會自行重啟，直到成功。"></a>稍後進行 kubeadm init 之後，即會產生此檔案 <code>/var/lib/kubelet/config.yaml</code>，而且此服務會自行重啟，直到成功。</h4><h1 id="K8s-初始化叢集"><a href="#K8s-初始化叢集" class="headerlink" title="K8s 初始化叢集"></a>K8s 初始化叢集</h1><p>以上，已經將基本的 K8s 初步元件安裝完畢，下面我們來進行 K8s 初始化叢集環境～</p>
+<h3 id="初始化之前，先進行-gcr-io-連線測試"><a href="#初始化之前，先進行-gcr-io-連線測試" class="headerlink" title="初始化之前，先進行 gcr.io 連線測試"></a>初始化之前，先進行 gcr.io 連線測試</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># kubeadm config images pull log</span></span><br><span class="line">[afu@dev-k8sm1 ~]$ sudo kubeadm config images pull</span><br><span class="line">[config/images] Pulled k8s.gcr.io/kube-apiserver:v1.13.1</span><br><span class="line">[config/images] Pulled k8s.gcr.io/kube-controller-manager:v1.13.1</span><br><span class="line">[config/images] Pulled k8s.gcr.io/kube-scheduler:v1.13.1</span><br><span class="line">[config/images] Pulled k8s.gcr.io/kube-proxy:v1.13.1</span><br><span class="line">[config/images] Pulled k8s.gcr.io/pause:3.1</span><br><span class="line">[config/images] Pulled k8s.gcr.io/etcd:3.2.24</span><br><span class="line">[config/images] Pulled k8s.gcr.io/coredns:1.2.6</span><br></pre></td></tr></table></figure>
+<h3 id="初始化經驗"><a href="#初始化經驗" class="headerlink" title="初始化經驗"></a>初始化經驗</h3><p>在初始化的參數中，必須要有 pod network cidr，參數<code>--pod-network-cidr</code><br>如需要指定 interface IP 作為 apiserver 服務IP，則需要有參數<code>--apiserver-advertise-address</code></p>
+<h3 id="初始化參數："><a href="#初始化參數：" class="headerlink" title="初始化參數："></a>初始化參數：</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo kubeadm init --apiserver-advertise-address=$(hostname -i)  --pod-network-cidr=10.244.0.0/16</span><br></pre></td></tr></table></figure>
+<h3 id="注意事項：-1"><a href="#注意事項：-1" class="headerlink" title="注意事項："></a>注意事項：</h3><h4 id="初始化第一次錯誤，原因有二"><a href="#初始化第一次錯誤，原因有二" class="headerlink" title="初始化第一次錯誤，原因有二"></a>初始化第一次錯誤，原因有二</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 初始化資訊</span></span><br><span class="line">[init] Using Kubernetes version: v1.13.1</span><br><span class="line">[preflight] Running pre-flight checks</span><br><span class="line">        [WARNING Firewalld]: firewalld is active, please ensure ports [6443 10250] are open or your cluster may not <span class="keyword">function</span> correctly</span><br><span class="line">error execution phase preflight: [preflight] Some fatal errors occurred:</span><br><span class="line">        [ERROR Swap]: running with swap on is not supported. Please <span class="built_in">disable</span> swap</span><br><span class="line">[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>以上提醒了要開放防火牆 6443/TCP、10250/TCP<br>開放方式</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo firewall-cmd --zone=public --add-port=6443/tcp --permanent</span><br><span class="line">sudo firewall-cmd --zone=public --add-port=10250/tcp --permanent</span><br><span class="line">sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>忘了關閉 swap，糗～<br>關閉方式</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 關閉 SWAP</span></span><br><span class="line">sudo swapoff -a</span><br><span class="line">sudo vi /etc/fstab</span><br><span class="line">    <span class="comment"># 註解下列 swap volume</span></span><br><span class="line">    <span class="comment">#/dev/mapper/VolGroup00-LogVol01 swap      swap    defaults</span></span><br><span class="line">​</span><br><span class="line">sudo vi /etc/sysctl.d/k8s.conf</span><br><span class="line">    net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">    net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">    vm.swappiness=0</span><br><span class="line"></span><br><span class="line">sudo sysctl --system</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>初始化成功紀錄：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[afu@dev-k8sm1 ~]$ sudo kubeadm init --apiserver-advertise-address=$(hostname -i)  --pod-network-cidr=10.244.0.0/16</span><br><span class="line">[init] Using Kubernetes version: v1.13.1</span><br><span class="line">Your Kubernetes master has initialized successfully!</span><br><span class="line"></span><br><span class="line">To start using your cluster, you need to run the following as a regular user:</span><br><span class="line"></span><br><span class="line">  mkdir -p <span class="variable">$HOME</span>/.kube</span><br><span class="line">  sudo cp -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">  sudo chown $(id -u):$(id -g) <span class="variable">$HOME</span>/.kube/config</span><br><span class="line"></span><br><span class="line">You should now deploy a pod network to the cluster.</span><br><span class="line">Run <span class="string">"kubectl apply -f [podnetwork].yaml"</span> with one of the options listed at:</span><br><span class="line">  https://kubernetes.io/docs/concepts/cluster-administration/addons/</span><br><span class="line"></span><br><span class="line">You can now join any number of machines by running the following on each node</span><br><span class="line">as root:</span><br><span class="line"></span><br><span class="line">  kubeadm join API-IP:6443 --token abc.zzxxccvv --discovery-token-ca-cert-hash sha256:0123456789</span><br></pre></td></tr></table></figure></p>
+<h2 id="允許非-root-權限下執行-kubectl"><a href="#允許非-root-權限下執行-kubectl" class="headerlink" title="允許非 root 權限下執行 kubectl"></a>允許非 root 權限下執行 kubectl</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p <span class="variable">$HOME</span>/.kube</span><br><span class="line">sudo cp -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">sudo chown $(id -u):$(id -g) <span class="variable">$HOME</span>/.kube/config</span><br></pre></td></tr></table></figure>
+<p>如果您有 root ，建議執行<br>export KUBECONFIG=/etc/kubernetes/admin.conf</p>
+<hr>
+<h1 id="設定-CNI：Flannel"><a href="#設定-CNI：Flannel" class="headerlink" title="設定 CNI：Flannel"></a>設定 CNI：Flannel</h1><p>要使用 Flannel 作為 CNI，則在稍早 kubeadm init 中指定參數 <code>--pod-network-cidr=10.244.0.0/16</code><br>稍早我有指定，無誤～<br>需要設定 <code>sysctl net.bridge.bridge-nf-call-iptables=1</code>，好讓流量能夠透過 iptables 通行。<br>這項稍早也完成設定，無誤～</p>
+<h2 id="檢查狀態"><a href="#檢查狀態" class="headerlink" title="檢查狀態"></a>檢查狀態</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[afu@dev-k8sm1 ~]$ sudo systemctl status kubelet</span><br><span class="line">● kubelet.service - kubelet: The Kubernetes Node Agent</span><br><span class="line">   Loaded: loaded (/etc/systemd/system/kubelet.service; enabled; vendor preset: disabled)</span><br><span class="line">  Drop-In: /etc/systemd/system/kubelet.service.d</span><br><span class="line">           └─10-kubeadm.conf</span><br><span class="line">   Active: active (running) since Thu 2019-01-10 21:12:30 CST; 19min ago</span><br><span class="line">     Docs: https://kubernetes.io/docs/</span><br><span class="line"> Main PID: 56904 (kubelet)</span><br><span class="line"></span><br><span class="line">[afu@dev-k8sm1 ~]$ kubectl get pods --all-namespaces</span><br><span class="line">NAMESPACE     NAME                                                 READY   STATUS    RESTARTS   AGE</span><br><span class="line">kube-system   coredns-86c58d9df4-4kp2l                             1/1     Running   0          18m</span><br><span class="line">kube-system   coredns-86c58d9df4-zfh7s                             1/1     Running   0          18m</span><br><span class="line">kube-system   etcd-dev-k8sm1.kingbay-tech.com                      1/1     Running   0          17m</span><br><span class="line">kube-system   kube-apiserver-dev-k8sm1.kingbay-tech.com            1/1     Running   0          17m</span><br><span class="line">kube-system   kube-controller-manager-dev-k8sm1.kingbay-tech.com   1/1     Running   0          17m</span><br><span class="line">kube-system   kube-flannel-ds-amd64-rx877                          1/1     Running   0          28s</span><br><span class="line">kube-system   kube-proxy-dvm46                                     1/1     Running   0          18m</span><br><span class="line">kube-system   kube-scheduler-dev-k8sm1.kingbay-tech.com            1/1     Running   0          17m</span><br></pre></td></tr></table></figure>
+<h1 id="Joining-your-nodes"><a href="#Joining-your-nodes" class="headerlink" title="Joining your nodes"></a>Joining your nodes</h1><p></p>
+<h3 id="進行-Join-nodes-之前，需要確認兩件事情"><a href="#進行-Join-nodes-之前，需要確認兩件事情" class="headerlink" title="進行 Join nodes 之前，需要確認兩件事情"></a>進行 Join nodes 之前，需要確認兩件事情</h3><ol>
+<li>需要完成 CRI Docker 安裝</li>
+<li>需要完成 kubeadm 安裝</li>
+</ol>
+<p>上述確認無誤後，即可於上述的 kubeadm join 資訊，完成 Join 動作。</p>
+<h1 id="以上僅是初步完成-K8s-環境安裝"><a href="#以上僅是初步完成-K8s-環境安裝" class="headerlink" title="以上僅是初步完成 K8s 環境安裝"></a>以上僅是初步完成 K8s 環境安裝</h1><h1 id="這篇算是複習、重點回顧"><a href="#這篇算是複習、重點回顧" class="headerlink" title="這篇算是複習、重點回顧"></a>這篇算是複習、重點回顧</h1><h1 id="挑戰在後頭"><a href="#挑戰在後頭" class="headerlink" title="挑戰在後頭"></a>挑戰在後頭</h1>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://tksmisafu.github.io/2019/01/14/centos7-install-k8s/" data-id="cjqvzk4wl00018hxhfb6utfv4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-kcd-10chapter-2" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/01/03/kcd-10chapter-2/" class="article-date">
@@ -110,7 +199,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-2/" data-id="cjqgfq9u90001aaxh6scxsk5s" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-2/" data-id="cjqvzk4wr00058hxhphwdkh3i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CD/">CD</a></li></ul>
@@ -231,7 +320,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/" data-id="cjqgfq9ud0004aaxhtbz47qdb" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/" data-id="cjqvzk4x7000g8hxhqsixlxm6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CD/">CD</a></li></ul>
@@ -268,8 +357,8 @@
         <p>這幾日，接到一個需求要架設基於 php 的專案軟體<br>因為僅是 demo 用途，故直接想到用 docker 架設此環境。</p>
 <p>架設此環境，所需資源有三：PHP、Nginx、MySQL<br>過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。<br>相對 Nginx &amp; MySQL docker images 部分，則使用官方資訊下載使用即可。<br><a href="https://hub.docker.com/_/nginx/" target="_blank" rel="noopener">官方 Nginx image</a><br><a href="https://hub.docker.com/_/mysql/" target="_blank" rel="noopener">官方 MySQL image</a></p>
 <p>經過專案探尋與瞭解，也確認了需要的 php extension 清單，<br>基於<a href="https://hub.docker.com/_/php/" target="_blank" rel="noopener">官方 php image</a>，加上 <code>php extension</code> 需求，撰寫 <code>PHP Dockerfile</code> 如下：</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> php:<span class="number">5.6</span>-fpm</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span> apt-get update \</span><br><span class="line">  &amp;&amp; apt-get install -y \</span><br><span class="line">        libfreetype6-dev \</span><br><span class="line">        libjpeg62-turbo-dev \</span><br><span class="line">        libpng-dev \</span><br><span class="line">        libmcrypt-dev \</span><br><span class="line">  &amp;&amp; docker-php-ext-install -j$(nproc) iconv \</span><br><span class="line">  &amp;&amp; docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \</span><br><span class="line">  &amp;&amp; docker-php-ext-install -j$(nproc) gd</span><br><span class="line"></span><br><span class="line">RUN docker-php-ext-install mysql mysqli pdo pdo_mysql mbstring mcrypt sockets</span><br></pre></td></tr></table></figure>
-<p>php 專案中，基本上都需要用上 composer 指令，進行專案初始化<br>可使用<a href="https://hub.docker.com/_/composer/" target="_blank" rel="noopener">官方 composer</a>，並且也需要搭配 <code>php extension</code> 需求，撰寫 <code>PHP Dockerfile</code> 如下：<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> composer</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span> apk upgrade --update &amp;&amp; \</span><br><span class="line">    apk --no-cache add libmcrypt-dev mysql-client libpng-dev $PHPIZE_DEPS \</span><br><span class="line">    &amp;&amp; pecl install mcrypt-1.0.1 \</span><br><span class="line">    &amp;&amp; docker-php-ext-enable mcrypt</span><br><span class="line"></span><br><span class="line">RUN docker-php-ext-install -j$(nproc) gd mysqli</span><br><span class="line">RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql iconv mbstring sockets</span><br><span class="line"></span><br><span class="line">WORKDIR /app</span><br><span class="line"></span><br><span class="line">ENTRYPOINT ["/bin/sh", "/docker-entrypoint.sh"]</span><br><span class="line"></span><br><span class="line">CMD ["composer"]</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> php:<span class="number">5.6</span>-fpm</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update \</span></span><br><span class="line"><span class="bash">  &amp;&amp; apt-get install -y \</span></span><br><span class="line"><span class="bash">        libfreetype6-dev \</span></span><br><span class="line"><span class="bash">        libjpeg62-turbo-dev \</span></span><br><span class="line"><span class="bash">        libpng-dev \</span></span><br><span class="line"><span class="bash">        libmcrypt-dev \</span></span><br><span class="line"><span class="bash">  &amp;&amp; docker-php-ext-install -j$(nproc) iconv \</span></span><br><span class="line"><span class="bash">  &amp;&amp; docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \</span></span><br><span class="line"><span class="bash">  &amp;&amp; docker-php-ext-install -j$(nproc) gd</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN docker-php-ext-install mysql mysqli pdo pdo_mysql mbstring mcrypt sockets</span></span><br></pre></td></tr></table></figure>
+<p>php 專案中，基本上都需要用上 composer 指令，進行專案初始化<br>可使用<a href="https://hub.docker.com/_/composer/" target="_blank" rel="noopener">官方 composer</a>，並且也需要搭配 <code>php extension</code> 需求，撰寫 <code>PHP Dockerfile</code> 如下：<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> composer</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk upgrade --update &amp;&amp; \</span></span><br><span class="line"><span class="bash">    apk --no-cache add libmcrypt-dev mysql-client libpng-dev <span class="variable">$PHPIZE_DEPS</span> \</span></span><br><span class="line"><span class="bash">    &amp;&amp; pecl install mcrypt-1.0.1 \</span></span><br><span class="line"><span class="bash">    &amp;&amp; docker-php-ext-enable mcrypt</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN docker-php-ext-install -j$(nproc) gd mysqli</span></span><br><span class="line"><span class="bash">RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql iconv mbstring sockets</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">WORKDIR /app</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">ENTRYPOINT [<span class="string">"/bin/sh"</span>, <span class="string">"/docker-entrypoint.sh"</span>]</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">CMD [<span class="string">"composer"</span>]</span></span><br></pre></td></tr></table></figure></p>
 <p>撰寫後，進行 docker build 工作<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># docker build 指令</span></span><br><span class="line">docker build -t tag-name ./</span><br></pre></td></tr></table></figure></p>
 <p>composer install &amp; create-project 指令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># composer create-project project/name</span></span><br><span class="line">sudo docker run --rm --interactive --tty -v /Documents/<span class="built_in">test</span>:/app --user $(id -u):$(id -g) composer create-project project/name</span><br><span class="line"><span class="comment"># composer install</span></span><br><span class="line">sudo docker run --rm --interactive --tty -v /Documents/<span class="built_in">test</span>:/app --user $(id -u):$(id -g) composer install</span><br></pre></td></tr></table></figure></p>
 <p>寫此篇其最主要紀錄的是過程中的問題概要，留下紀錄作為後續回顧。</p>
@@ -299,7 +388,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/02/docker-0102/" data-id="cjqgfq9u50000aaxha1pmetm6" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/02/docker-0102/" data-id="cjqvzk4wp00038hxhuhi7sqoh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
@@ -385,7 +474,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/26/consul/" data-id="cjqgfq9uf0007aaxhj3l8l221" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/26/consul/" data-id="cjqvzk4wh00008hxhd6bdsmzi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
@@ -441,7 +530,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/26/new-blog/" data-id="cjqgfq9ue0005aaxhhcx4yq64" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/26/new-blog/" data-id="cjqvzk4ws00088hxhmu1ond43" class="article-share-link">Share</a>
       
       
     </footer>
@@ -486,7 +575,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/25/hello-world/" data-id="cjqgfq9uc0003aaxhikzoafcc" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/25/hello-world/" data-id="cjqvzk4wq00048hxh440u33rs" class="article-share-link">Share</a>
       
       
     </footer>
@@ -509,7 +598,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
     </div>
   </div>
 
@@ -519,7 +608,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/CD/" style="font-size: 20px;">CD</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service-discovery/" style="font-size: 10px;">service_discovery</a>
+      <a href="/tags/CD/" style="font-size: 20px;">CD</a> <a href="/tags/K8s/" style="font-size: 10px;">K8s</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service-discovery/" style="font-size: 10px;">service_discovery</a>
     </div>
   </div>
 
@@ -541,6 +630,10 @@ ERROR: &#39;phpize&#39; failed</code></p>
       <ul>
         
           <li>
+            <a href="/2019/01/14/centos7-install-k8s/">CentOS 7 上安裝 K8s 自家練習環境</a>
+          </li>
+        
+          <li>
             <a href="/2019/01/03/kcd-10chapter-2/">CD-第十章節心得-2</a>
           </li>
         
@@ -554,10 +647,6 @@ ERROR: &#39;phpize&#39; failed</code></p>
         
           <li>
             <a href="/2018/12/26/consul/">consul</a>
-          </li>
-        
-          <li>
-            <a href="/2018/12/26/new-blog/">new-blog</a>
           </li>
         
       </ul>
