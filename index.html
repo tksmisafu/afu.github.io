@@ -62,6 +62,69 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-k8s-service-1" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/15/k8s-service-1/" class="article-date">
+  <time datetime="2019-01-15T14:22:27.000Z" itemprop="datePublished">2019-01-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/15/k8s-service-1/">K8s Service 介紹</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。<br>這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。</p>
+<hr>
+<p>#透過 kubectl expose 建立 service</p>
+<p>##提前概要：</p>
+<ul>
+<li>從現有的 Deployment、ReplicaSet 物件中，建立 Service</li>
+<li>kubectl expose 執行條件：物件中必須要有 selector、port flag</li>
+</ul>
+<p>相關 log：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl expose pod alpaca-prod</span><br><span class="line">error: could not retrieve selectors via --selector flag or introspection: the pod has no labels and cannot be exposed</span><br><span class="line">See <span class="string">'kubectl expose -h'</span> <span class="keyword">for</span> <span class="built_in">help</span> and examples.</span><br><span class="line"></span><br><span class="line">$ kubectl expose replicasets alpaca-prod</span><br><span class="line">error: could not find port via --port flag or introspection</span><br></pre></td></tr></table></figure></p>
+<p>Lab案例：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建立 replicaset 物件</span></span><br><span class="line">[afu@k8s ~]$ kubectl apply -f 7-78-kuard-rs.yaml</span><br><span class="line">replicaset.extensions/alpaca-prod created</span><br><span class="line"></span><br><span class="line"><span class="comment"># Get pod 物件資訊 、 --show-labels</span></span><br><span class="line">[afu@k8s ~]$ kubectl get pod -o wide --show-labels</span><br><span class="line">NAME                READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   LABELS</span><br><span class="line">alpaca-prod-5bbdx   1/1     Running   0          15s   172.17.0.5   minikube   &lt;none&gt;           app=alpaca,env=prod,ver=1</span><br><span class="line">alpaca-prod-88gdw   1/1     Running   0          15s   172.17.0.6   minikube   &lt;none&gt;           app=alpaca,env=prod,ver=1</span><br><span class="line">alpaca-prod-p749d   1/1     Running   0          15s   172.17.0.7   minikube   &lt;none&gt;           app=alpaca,env=prod,ver=1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[afu@k8s ~]$ kubectl get replicaset -o wide</span><br><span class="line">NAME          DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES                           SELECTOR</span><br><span class="line">alpaca-prod   3         3         3       27s   kuard        gcr.io/kuar-demo/kuard-amd64:2   app=alpaca,env=prod,ver=1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[afu@k8s ~]$ kubectl get daemonset -o wide</span><br><span class="line">No resources found.</span><br><span class="line"></span><br><span class="line">[afu@k8s ~]$ kubectl get deployment -o wide</span><br><span class="line">No resources found.</span><br><span class="line"></span><br><span class="line"><span class="comment"># 透過 kubectl expose 建立 service</span></span><br><span class="line">[afu@k8s ~]$ kubectl expose replicasets alpaca-prod</span><br><span class="line">service/alpaca-prod exposed</span><br></pre></td></tr></table></figure></p>
+<p>Lab案例觀察<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[afu@k8s ~]$ kubectl get service -o wide</span><br><span class="line">NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE   SELECTOR</span><br><span class="line">alpaca-prod   ClusterIP   10.103.75.220   &lt;none&gt;        8080/TCP   13s   app=alpaca,env=prod,ver=1</span><br><span class="line">kubernetes    ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP    65m   &lt;none&gt;</span><br></pre></td></tr></table></figure></p>
+<p>觀察重點：</p>
+<ol>
+<li>從上面建立 alpaca-prod service 範例當中，觀察 <code>SELECTOR</code> 欄位 <code>app=alpaca,env=prod,ver=1</code><br><code>kubectl expose</code> 指令是從上述的 replicaset 物件中擷取 <code>label、port</code> 兩參數作為 service flag</li>
+<li>此 service type 是 ClusterIP，並提供一個 <code>CLUSTER-IP</code> 虛擬IP。</li>
+<li>系統會透過 SELECTOR 條件識別，進行 service -&gt; pod 負載平衡。</li>
+<li>目前此 service 無法對外開放存取，僅限於 K8s Cluster。</li>
+</ol>
+<hr>
+<h1 id="開放-service-對外存取"><a href="#開放-service-對外存取" class="headerlink" title="開放 service 對外存取"></a>開放 service 對外存取</h1><p>從上述 alpaca-prod service 範例中直接進行後續說明<br>上述範例中，alpaca-prod service 預設採用 <code>CLUSTER-IP</code> 賦予叢集中可以….<del>我還不是很懂此用途</del><br>在此要透過另一個 service type：NodePort 方式，開放服務對外連線</p>
+<h3 id="方式1：變更現有-service-type"><a href="#方式1：變更現有-service-type" class="headerlink" title="方式1：變更現有 service type"></a>方式1：變更現有 service type</h3><p>將 type: ClusterIP 修改成 type: NodePort<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[afu@k8s ~]$ kubectl edit service alpaca-prod</span><br><span class="line">service/alpaca-prod edited</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Please edit the object below. Lines beginning with a '#' will be ignored,</span></span><br><span class="line"><span class="comment"># and an empty file will abort the edit. If an error occurs while saving this file will be</span></span><br><span class="line"><span class="comment"># reopened with the relevant failures.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  creationTimestamp:</span> <span class="string">"2019-01-15T09:05:36Z"</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    app:</span> <span class="string">alpaca</span></span><br><span class="line"><span class="attr">    env:</span> <span class="string">prod</span></span><br><span class="line"><span class="attr">    ver:</span> <span class="string">"1"</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">alpaca-prod</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">  resourceVersion:</span> <span class="string">"5202"</span></span><br><span class="line"><span class="attr">  selfLink:</span> <span class="string">/api/v1/namespaces/default/services/alpaca-prod</span></span><br><span class="line"><span class="attr">  uid:</span> <span class="string">b87c02f5-18a4-11e9-8813-08002730aeb3</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  clusterIP:</span> <span class="number">10.103</span><span class="number">.75</span><span class="number">.220</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">  - port:</span> <span class="number">8080</span></span><br><span class="line"><span class="attr">    protocol:</span> <span class="string">TCP</span></span><br><span class="line"><span class="attr">    targetPort:</span> <span class="number">8080</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    app:</span> <span class="string">alpaca</span></span><br><span class="line"><span class="attr">    env:</span> <span class="string">prod</span></span><br><span class="line"><span class="attr">    ver:</span> <span class="string">"1"</span></span><br><span class="line"><span class="attr">  sessionAffinity:</span> <span class="string">None</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">NodePort</span></span><br><span class="line"><span class="comment"># ^ 將 type: ClusterIP 修改成 type: NodePort</span></span><br><span class="line"><span class="attr">status:</span></span><br><span class="line"><span class="attr">  loadBalancer:</span> <span class="string">&#123;&#125;</span></span><br></pre></td></tr></table></figure>
+<p>變更後觀察：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[afu@k8s ~]$ kubectl get service -o wide</span><br><span class="line">NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE    SELECTOR</span><br><span class="line">alpaca-prod   NodePort    10.103.75.220   &lt;none&gt;        8080:30044/TCP   37m    app=alpaca,env=prod,ver=1</span><br><span class="line">kubernetes    ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP          102m   &lt;none&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[afu@k8s ~]$ kubectl describe service alpaca-prod</span><br><span class="line">Name:                     alpaca-prod</span><br><span class="line">Namespace:                default</span><br><span class="line">Labels:                   app=alpaca</span><br><span class="line">                          env=prod</span><br><span class="line">                          ver=1</span><br><span class="line">Annotations:              &lt;none&gt;</span><br><span class="line">Selector:                 app=alpaca,env=prod,ver=1</span><br><span class="line">Type:                     NodePort</span><br><span class="line">IP:                       10.103.75.220</span><br><span class="line">Port:                     &lt;<span class="built_in">unset</span>&gt;  8080/TCP</span><br><span class="line">TargetPort:               8080/TCP</span><br><span class="line">NodePort:                 &lt;<span class="built_in">unset</span>&gt;  30044/TCP</span><br><span class="line">Endpoints:                172.17.0.5:8080,172.17.0.6:8080,172.17.0.7:8080</span><br><span class="line">Session Affinity:         None</span><br><span class="line">External Traffic Policy:  Cluster</span><br><span class="line">Events:                   &lt;none&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="方式2：kubectl-expose-–type-NodePort"><a href="#方式2：kubectl-expose-–type-NodePort" class="headerlink" title="方式2：kubectl expose –type=NodePort"></a>方式2：kubectl expose –type=NodePort</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建立第二範例 alpaca-prod22</span></span><br><span class="line">[afu@k8s ~]$ kubectl apply -f 7-78-kuard22-rs.yaml</span><br><span class="line">replicaset.extensions/alpaca-prod22 created</span><br><span class="line"></span><br><span class="line"><span class="comment"># kubectl expose + --type=NodePort</span></span><br><span class="line">[afu@k8s ~]$ kubectl expose replicaset alpaca-prod22 --<span class="built_in">type</span>=NodePort</span><br><span class="line">service/alpaca-prod22 exposed</span><br><span class="line"></span><br><span class="line">[afu@k8s ~]$ kubectl get service -o wide</span><br><span class="line">NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE    SELECTOR</span><br><span class="line">alpaca-prod     NodePort    10.103.75.220   &lt;none&gt;        8080:30044/TCP   53m    app=alpaca,env=prod,ver=1</span><br><span class="line">alpaca-prod22   NodePort    10.105.98.135   &lt;none&gt;        8080:30142/TCP   20s    app=alpaca,env=prod,ver=2</span><br><span class="line">kubernetes      ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP          118m   &lt;none&gt;</span><br><span class="line"></span><br><span class="line">[afu@k8s ~]$ kubectl describe service alpaca-prod22</span><br><span class="line">Name:                     alpaca-prod22</span><br><span class="line">Namespace:                default</span><br><span class="line">Labels:                   app=alpaca</span><br><span class="line">                          env=prod</span><br><span class="line">                          ver=2</span><br><span class="line">Annotations:              &lt;none&gt;</span><br><span class="line">Selector:                 app=alpaca,env=prod,ver=2</span><br><span class="line">Type:                     NodePort</span><br><span class="line">IP:                       10.105.98.135</span><br><span class="line">Port:                     &lt;<span class="built_in">unset</span>&gt;  8080/TCP</span><br><span class="line">TargetPort:               8080/TCP</span><br><span class="line">NodePort:                 &lt;<span class="built_in">unset</span>&gt;  30142/TCP</span><br><span class="line">Endpoints:                172.17.0.10:8080,172.17.0.8:8080,172.17.0.9:8080</span><br><span class="line">Session Affinity:         None</span><br><span class="line">External Traffic Policy:  Cluster</span><br><span class="line">Events:                   &lt;none&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="方式3：kubectl-port-forward-轉發-tcp-連線"><a href="#方式3：kubectl-port-forward-轉發-tcp-連線" class="headerlink" title="方式3：kubectl port-forward 轉發 tcp 連線"></a>方式3：kubectl port-forward 轉發 tcp 連線</h3><p>afu@afu-P5440UA:~$ kubectl port-forward –address 0.0.0.0 service/alpaca-prod 30111:8080<br>Forwarding from 0.0.0.0:30111 -&gt; 8080<br>Handling connection for 30111<br>Handling connection for 30111</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://tksmisafu.github.io/2019/01/15/k8s-service-1/" data-id="cjqxuk8lf0004kixh8ba0i4w9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service/">service</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-centos7-install-k8s" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/01/14/centos7-install-k8s/" class="article-date">
@@ -142,7 +205,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/14/centos7-install-k8s/" data-id="cjqvzk4wl00018hxhfb6utfv4" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/14/centos7-install-k8s/" data-id="cjqxuk8l80000kixht0b0n86l" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li></ul>
@@ -202,7 +265,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-2/" data-id="cjqvzk4wr00058hxhphwdkh3i" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-2/" data-id="cjqxuk8li0008kixhmmu610zt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CD/">CD</a></li></ul>
@@ -323,7 +386,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/" data-id="cjqvzk4x7000g8hxhqsixlxm6" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/" data-id="cjqxuk8lg0005kixh9r77hvxm" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CD/">CD</a></li></ul>
@@ -391,7 +454,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/02/docker-0102/" data-id="cjqvzk4wp00038hxhuhi7sqoh" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/02/docker-0102/" data-id="cjqxuk8lk000bkixhaow3b7rk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
@@ -477,7 +540,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/26/consul/" data-id="cjqvzk4wh00008hxhd6bdsmzi" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/26/consul/" data-id="cjqxuk8lc0001kixh53n1w6mi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
@@ -533,7 +596,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/26/new-blog/" data-id="cjqvzk4ws00088hxhmu1ond43" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/26/new-blog/" data-id="cjqxuk8li0009kixhfaycmip6" class="article-share-link">Share</a>
       
       
     </footer>
@@ -578,7 +641,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/25/hello-world/" data-id="cjqvzk4wq00048hxh440u33rs" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/25/hello-world/" data-id="cjqxuk8le0003kixhst24sehe" class="article-share-link">Share</a>
       
       
     </footer>
@@ -601,7 +664,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
     </div>
   </div>
 
@@ -611,7 +674,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/CD/" style="font-size: 20px;">CD</a> <a href="/tags/K8s/" style="font-size: 10px;">K8s</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service-discovery/" style="font-size: 10px;">service_discovery</a>
+      <a href="/tags/CD/" style="font-size: 20px;">CD</a> <a href="/tags/K8s/" style="font-size: 20px;">K8s</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/service-discovery/" style="font-size: 10px;">service_discovery</a>
     </div>
   </div>
 
@@ -633,6 +696,10 @@ ERROR: &#39;phpize&#39; failed</code></p>
       <ul>
         
           <li>
+            <a href="/2019/01/15/k8s-service-1/">K8s Service 介紹</a>
+          </li>
+        
+          <li>
             <a href="/2019/01/14/centos7-install-k8s/">CentOS 7 上安裝 K8s 自家練習環境</a>
           </li>
         
@@ -646,10 +713,6 @@ ERROR: &#39;phpize&#39; failed</code></p>
         
           <li>
             <a href="/2019/01/02/docker-0102/">用 docker 架設 php 平台</a>
-          </li>
-        
-          <li>
-            <a href="/2018/12/26/consul/">consul</a>
           </li>
         
       </ul>
