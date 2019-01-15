@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="FuFu IO">
 <meta property="og:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-01-15T14:51:00.806Z">
+<meta property="og:updated_time" content="2019-01-15T15:36:43.146Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="K8s Service 介紹">
 <meta name="twitter:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
@@ -117,6 +117,25 @@
 <h3 id="方式3：kubectl-expose-–type-NodePort"><a href="#方式3：kubectl-expose-–type-NodePort" class="headerlink" title="方式3：kubectl expose –type=NodePort"></a>方式3：kubectl expose –type=NodePort</h3><p>關於 kubectl expose –type=NodePort，可參考<a href="https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/" target="_blank" rel="noopener">官方說明頁</a></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建立第二範例 alpaca-prod22</span></span><br><span class="line">[afu@k8s ~]$ kubectl apply -f 7-78-kuard22-rs.yaml</span><br><span class="line">replicaset.extensions/alpaca-prod22 created</span><br><span class="line"></span><br><span class="line"><span class="comment"># kubectl expose + --type=NodePort</span></span><br><span class="line">[afu@k8s ~]$ kubectl expose replicaset alpaca-prod22 --<span class="built_in">type</span>=NodePort</span><br><span class="line">service/alpaca-prod22 exposed</span><br><span class="line"></span><br><span class="line">[afu@k8s ~]$ kubectl get service -o wide</span><br><span class="line">NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE    SELECTOR</span><br><span class="line">alpaca-prod     NodePort    10.103.75.220   &lt;none&gt;        8080:30044/TCP   53m    app=alpaca,env=prod,ver=1</span><br><span class="line">alpaca-prod22   NodePort    10.105.98.135   &lt;none&gt;        8080:30142/TCP   20s    app=alpaca,env=prod,ver=2</span><br><span class="line">kubernetes      ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP          118m   &lt;none&gt;</span><br><span class="line"></span><br><span class="line">[afu@k8s ~]$ kubectl describe service alpaca-prod22</span><br><span class="line">Name:                     alpaca-prod22</span><br><span class="line">Namespace:                default</span><br><span class="line">Labels:                   app=alpaca</span><br><span class="line">                          env=prod</span><br><span class="line">                          ver=2</span><br><span class="line">Annotations:              &lt;none&gt;</span><br><span class="line">Selector:                 app=alpaca,env=prod,ver=2</span><br><span class="line">Type:                     NodePort</span><br><span class="line">IP:                       10.105.98.135</span><br><span class="line">Port:                     &lt;<span class="built_in">unset</span>&gt;  8080/TCP</span><br><span class="line">TargetPort:               8080/TCP</span><br><span class="line">NodePort:                 &lt;<span class="built_in">unset</span>&gt;  30142/TCP</span><br><span class="line">Endpoints:                172.17.0.10:8080,172.17.0.8:8080,172.17.0.9:8080</span><br><span class="line">Session Affinity:         None</span><br><span class="line">External Traffic Policy:  Cluster</span><br><span class="line">Events:                   &lt;none&gt;</span><br></pre></td></tr></table></figure>
 <p>透過 NodePort 開放服務連線，仍需要環境中的 public ip 賦予連線<br>如果是 GCP 環境，可下指令：<code>gcloud compute instances list</code><br>如果是 Minikube，可下指令：<code>kubectl cluster-info</code></p>
+<hr>
+<h1 id="關於-Kube-dns-與-Service-CLUSTER-IP-的血緣關係"><a href="#關於-Kube-dns-與-Service-CLUSTER-IP-的血緣關係" class="headerlink" title="關於 Kube-dns 與 Service CLUSTER-IP 的血緣關係"></a>關於 Kube-dns 與 Service CLUSTER-IP 的血緣關係</h1><p>在上述中，有提到 CLUSTER-IP，但不是很清楚有何作用，現在透過 kube-dns 服務，可以利用 FQDN 方式取得與連線 service。<br>kube-dns 服務是在建立 K8s 環境時，一併預設就會安裝的服務，可以透過此 DNS 服務查詢到 service 與 CLUSTER-IP 關係～</p>
+<p>從上述 Lab kuard 服務中，可以透過 Kuard 網頁中 DNS query 功能查詢相關 A 紀錄<br><code>kubectl port-forward --address 0.0.0.0 service/alpaca-prod 30111:8080</code></p>
+<ul>
+<li><p>查詢預設 namespace，只需輸入 server name </p>
+<ul>
+<li><p>例如：alpaca-prod<br> ;; QUESTION SECTION:<br> ;alpaca-prod.default.svc.cluster.local.    IN     A</p>
+<p> ;; ANSWER SECTION:<br> alpaca-prod.default.svc.cluster.local.    5    IN    A    10.103.75.220</p>
+</li>
+</ul>
+</li>
+<li><p>查詢不同 namespace，需要輸入 server.namespace </p>
+<ul>
+<li><p>例如：kubernetes-dashboard.kube-system<br>;; QUESTION SECTION:<br>;kubernetes-dashboard.kube-system.svc.cluster.local.    IN     A</p>
+<p>;; ANSWER SECTION:<br>kubernetes-dashboard.kube-system.svc.cluster.local.    5    IN    A    10.109.91.186</p>
+</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
