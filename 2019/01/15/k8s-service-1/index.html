@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="FuFu IO">
 <meta property="og:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-01-15T16:54:10.371Z">
+<meta property="og:updated_time" content="2019-01-15T16:55:31.760Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="K8s Service 介紹">
 <meta name="twitter:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
@@ -119,8 +119,7 @@
 <p>透過 NodePort 開放服務連線，仍需要環境中的 public ip 賦予連線<br>如果是 GCP 環境，可下指令：<code>gcloud compute instances list</code><br>如果是 Minikube，可下指令：<code>kubectl cluster-info</code></p>
 <hr>
 <h1 id="服務探索"><a href="#服務探索" class="headerlink" title="服務探索"></a>服務探索</h1><p>服務探索有助於也有必要去發現哪些服務程序正在執行、位於何處執行、IP\Port～等等資訊<br>如何快速找到正確的物件對象，去探索及解決問題、能夠快速上線服務等等，都是需要依賴服務探索<br>以下介紹三個關於<code>服務探索</code>的介紹。</p>
-<p>## 1.關於 Kube-dns 與 Service CLUSTER-IP 的血緣關係</p>
-<p>在上述中，有提到 CLUSTER-IP，但不是很清楚有何作用，現在透過 kube-dns 服務，可以利用 FQDN 方式取得與連線 service。<br>kube-dns 服務是在建立 K8s 環境時，一併預設就會安裝的服務，可以透過此 DNS 服務查詢到 service 與 <code>CLUSTER-IP</code> 關係～</p>
+<h2 id="1-關於-Kube-dns-與-Service-CLUSTER-IP-的血緣關係"><a href="#1-關於-Kube-dns-與-Service-CLUSTER-IP-的血緣關係" class="headerlink" title="1.關於 Kube-dns 與 Service CLUSTER-IP 的血緣關係"></a>1.關於 Kube-dns 與 Service CLUSTER-IP 的血緣關係</h2><p>在上述中，有提到 CLUSTER-IP，但不是很清楚有何作用，現在透過 kube-dns 服務，可以利用 FQDN 方式取得與連線 service。<br>kube-dns 服務是在建立 K8s 環境時，一併預設就會安裝的服務，可以透過此 DNS 服務查詢到 service 與 <code>CLUSTER-IP</code> 關係～</p>
 <p>從上述 Lab kuard 服務中，可以透過 Kuard 網頁中 DNS query 功能查詢相關 A 紀錄<br><code>kubectl port-forward --address 0.0.0.0 service/alpaca-prod 30111:8080</code></p>
 <ul>
 <li><p>查詢預設 namespace，只需輸入 server name </p>
