@@ -16,7 +16,7 @@
 <meta property="og:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://tksmisafu.github.io/2019/01/15/k8s-service-1/2019-01-16-2.41.57.png">
-<meta property="og:updated_time" content="2019-01-16T07:02:23.039Z">
+<meta property="og:updated_time" content="2019-01-16T07:19:05.025Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="K8s Service 介紹">
 <meta name="twitter:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
@@ -162,10 +162,12 @@
 <li>啟動 kuard <code>[afu@k8s ~]$ kubectl port-forward --address 0.0.0.0 service/alpaca-prod 30111:8080</code></li>
 </ul>
 <img src="/2019/01/15/k8s-service-1/2019-01-16-2.41.57.png" title="[CLUSTER-IP環境變數]">
+<p>&lt;%- toc(page.content, {<br>        class: ‘post-toc’,<br>        list_number: true<br>    }) %&gt;</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/15/k8s-service-1/" data-id="cjqxuk8lf0004kixh8ba0i4w9" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/15/k8s-service-1/" data-id="cjqyuv98k000j3nxh3facu1ie" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service/">service</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
