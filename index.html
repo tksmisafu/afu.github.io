@@ -86,7 +86,7 @@
       
         <div id="toc" class="toc-article">
           <strong class="toc-title">[文章目录]</strong>
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#建立服務"><span class="toc-text">建立服務</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#透過-kubectl-expose-建立-service"><span class="toc-text">透過 kubectl expose 建立 service</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#提前概要："><span class="toc-text">提前概要：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Lab案例："><span class="toc-text">Lab案例：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Lab案例觀察"><span class="toc-text">Lab案例觀察</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#開放-service-對外存取"><span class="toc-text">開放 service 對外存取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#方式：kubectl-port-forward-轉發-tcp-連線"><span class="toc-text">方式：kubectl port-forward 轉發 tcp 連線</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方式：變更現有-service-type"><span class="toc-text">方式：變更現有 service type</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方式：kubectl-expose-–type-NodePort"><span class="toc-text">方式：kubectl expose –type=NodePort</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#服務探索"><span class="toc-text">服務探索</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#關於-Kube-dns-與-Service-CLUSTER-IP-的血緣關係"><span class="toc-text">關於 Kube-dns 與 Service CLUSTER-IP 的血緣關係</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#關於-Endpoint"><span class="toc-text">關於 Endpoint</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#手動探索服務"><span class="toc-text">手動探索服務</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#kube-proxy-與-CLUSTER-IP-愛恨情仇"><span class="toc-text">kube-proxy 與 CLUSTER-IP 愛恨情仇</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#建立服務"><span class="toc-text">建立服務</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#透過-kubectl-expose-建立-service"><span class="toc-text">透過 kubectl expose 建立 service</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#提前概要："><span class="toc-text">提前概要：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Lab案例："><span class="toc-text">Lab案例：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Lab案例觀察"><span class="toc-text">Lab案例觀察</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#開放-service-對外存取"><span class="toc-text">開放 service 對外存取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#方式：kubectl-port-forward-轉發-tcp-連線"><span class="toc-text">方式：kubectl port-forward 轉發 tcp 連線</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方式：變更現有-service-type"><span class="toc-text">方式：變更現有 service type</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方式：kubectl-expose-–type-NodePort"><span class="toc-text">方式：kubectl expose –type=NodePort</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#服務探索"><span class="toc-text">服務探索</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#關於-Kube-dns-與-Service-CLUSTER-IP-的血緣關係"><span class="toc-text">關於 Kube-dns 與 Service CLUSTER-IP 的血緣關係</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#關於-Endpoint"><span class="toc-text">關於 Endpoint</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#手動探索服務"><span class="toc-text">手動探索服務</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#kube-proxy-與-CLUSTER-IP-愛恨情仇"><span class="toc-text">kube-proxy 與 CLUSTER-IP 愛恨情仇</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#服務探測、檢查功能"><span class="toc-text">服務探測、檢查功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#探測器定義要點"><span class="toc-text">探測器定義要點</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三探測模式應用場景"><span class="toc-text">三探測模式應用場景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Liveness-定義方式"><span class="toc-text">Liveness 定義方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Readiness-定義方式"><span class="toc-text">Readiness 定義方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置說明"><span class="toc-text">配置說明</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HTTP-應用中進行-httpGet-檢查，有其他配置選項："><span class="toc-text">HTTP 應用中進行 httpGet 檢查，有其他配置選項：</span></a></li></ol></li></ol></li></ol>
         </div>
         <hr>
 <p>K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。<br>這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。</p>
@@ -164,6 +164,56 @@
 <li>啟動 kuard <code>[afu@k8s ~]$ kubectl port-forward --address 0.0.0.0 service/alpaca-prod 30111:8080</code></li>
 </ul>
 <img src="/2019/01/15/k8s-service-1/2019-01-16-2.41.57.png" title="[CLUSTER-IP環境變數]">
+<hr>
+<h1 id="服務探測、檢查功能"><a href="#服務探測、檢查功能" class="headerlink" title="服務探測、檢查功能"></a>服務探測、檢查功能</h1><p>K8s 運行應用程式的容器時，K8s 會利用<strong>健康檢查進程</strong>方式促進容器維持運作中～<br><strong>健康檢查進程</strong>只是確保 Container 內的應用程式進程能夠一直運行，如沒運行就進行重啟。<br>但是，僅檢查程序 “是否運行” 是不足夠的，例如進程 deadlock 了，雖進程運行中但無法回應請求，這在<strong>健康檢查程序</strong>是無法判斷出問題的，且仍認為正常運行中…囧</p>
+<p><strong>K8s 支援了兩種探測器：<code>Liveness、Readiness</code></strong><br>這兩者 Probe 功能是有差異的～  </p>
+<ul>
+<li><code>Liveness</code> 是在 pod 已經運行狀態下並且開放請求流量時，進行 pod check 任務，如檢查失敗則進行 pod 重啟，嘗試恢復服務。</li>
+<li><code>Readiness</code> 是反過來，就在 Pod 未接受請求流量前就開始進行 pod check，並確認 check ok 之後，pod 才加入 service 行列中開始接受請求流量。<br>Liveness 探測器功能，可以針對應用程式的邏輯進行請求，並期望獲得正常回應，藉此判斷應用程式是否合理的運作中。<br>Readiness 探測器功能，在於服務部署初始化之後，先行檢查 pod 是否已經準備就緒，檢查後才可開放服務流量進來。</li>
+</ul>
+<p>共通點就是，確保 pod 在健康狀態下於 K8s 叢集中運行，有關兩者基本介紹如下：</p>
+<h3 id="探測器定義要點"><a href="#探測器定義要點" class="headerlink" title="探測器定義要點"></a>探測器定義要點</h3><ul>
+<li>探測器功能是定義於 Pod manifest 檔案中。</li>
+<li>每個 Pod 的 Liveness、Readiness 功能是分開個別定義的。</li>
+<li>支援三種模式：<ul>
+<li>exec：利用命令腳本方式</li>
+<li>httpGet: 透過 http 協定回應</li>
+<li>tcpSocket：嘗試進行 TCP Socket 連線</li>
+</ul>
+</li>
+</ul>
+<h3 id="三探測模式應用場景"><a href="#三探測模式應用場景" class="headerlink" title="三探測模式應用場景"></a>三探測模式應用場景</h3><ol>
+<li>可在容器內執行腳本或程式，定義<code>exec</code>執行腳本，探測後回傳 zero 退出狀態碼，則視為探測正常運作。</li>
+<li>針對 http 服務可以定義<code>httpGet</code>請求，藉此獲得 http response 狀態，判斷此 http 程序是否正常運作。</li>
+<li>針對 TCP Socket 連線狀態進行探測，可以定義<code>tcpSocket</code>。</li>
+</ol>
+<h3 id="Liveness-定義方式"><a href="#Liveness-定義方式" class="headerlink" title="Liveness 定義方式"></a>Liveness 定義方式</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Manifest 檔案</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">  - image:</span> <span class="string">k8s.gcr.io/echoserver:1.10</span></span><br><span class="line"><span class="attr">    livenessProbe:</span></span><br><span class="line"><span class="attr">      httpGet:</span></span><br><span class="line"><span class="attr">        path:</span> <span class="string">/healthy</span></span><br><span class="line"><span class="attr">        port:</span> <span class="number">8080</span></span><br><span class="line"><span class="attr">      initialDelaySeconds:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      periodSeconds:</span> <span class="number">10</span></span><br><span class="line"><span class="attr">      timeoutSeconds:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      failureThreshold:</span> <span class="number">3</span></span><br></pre></td></tr></table></figure>
+<h3 id="Readiness-定義方式"><a href="#Readiness-定義方式" class="headerlink" title="Readiness 定義方式"></a>Readiness 定義方式</h3><p>其配置方式與 Liveness 是雷同地：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以下僅是配置示意範本</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">  - image:</span> <span class="string">k8s.gcr.io/echoserver:1.10</span></span><br><span class="line"><span class="attr">    readinessProbe:</span></span><br><span class="line"><span class="attr">      httpGet:</span></span><br><span class="line"><span class="attr">        path:</span> <span class="string">/healthy</span></span><br><span class="line"><span class="attr">        port:</span> <span class="number">8080</span></span><br><span class="line"><span class="attr">      initialDelaySeconds:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      periodSeconds:</span> <span class="number">10</span></span><br><span class="line"><span class="attr">      timeoutSeconds:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      failureThreshold:</span> <span class="number">3</span></span><br></pre></td></tr></table></figure>
+<h3 id="配置說明"><a href="#配置說明" class="headerlink" title="配置說明"></a>配置說明</h3><p>Probe 配置中有很多依場景需求而定，盡可能滿足 liveness 和 readiness 的檢查功能：</p>
+<ul>
+<li><code>initialDelaySeconds</code>：容器啟動後幾秒之後進行第一次探測任務。</li>
+<li><code>periodSeconds</code>：執行探測的頻率間隔，默認是10秒，最小1秒。</li>
+<li><code>timeoutSeconds</code>：探測超時時間，默認1秒，最小1秒。</li>
+<li><code>successThreshold</code>：繼上次失敗後，最少連續探測成功次數才被認定為成功，默認是 1；<ul>
+<li>對於 <strong>liveness</strong> 必須是 1，最小值是 1。 </li>
+</ul>
+</li>
+<li><code>failureThreshold</code>：連續探測失敗多少次才被認定為失敗，默認是 3，最小值是 1；<ul>
+<li><strong>liveness</strong> 達標情況下將重啟 pod。</li>
+<li><strong>readiness</strong> 在此標準下，認定 pod 未準備就緒。</li>
+</ul>
+</li>
+</ul>
+<h4 id="HTTP-應用中進行-httpGet-檢查，有其他配置選項："><a href="#HTTP-應用中進行-httpGet-檢查，有其他配置選項：" class="headerlink" title="HTTP 應用中進行 httpGet 檢查，有其他配置選項："></a>HTTP 應用中進行 httpGet 檢查，有其他配置選項：</h4><ul>
+<li><code>host</code>：連線的主機名，預設連線到 pod IP。</li>
+<li><code>scheme</code>：連線使用的 schema，默認HTTP。</li>
+<li><code>path</code>: 請求 HTTP server 的 path。</li>
+<li><code>httpHeaders</code>：定義 HTTP request header。</li>
+<li><code>port</code>：容器內所啟用的 HTTP TCP Port，介於 1 和 65525 之間。</li>
+</ul>
+<p>有關 HTTP probe，由 kubelet 針對所指定的<code>path、port</code>發送 HTTP 請求進行檢查。<br>預設，Kubelet 將 probe 發送到容器的 IP 地址，除非設置了<code>host</code>欄位而覆蓋了預設值。<br>在大多數情況下，是不用設置<code>host</code>欄位。</p>
+<p>有一種情況下您可以設置它～<br>假設容器在 <em>127.0.0.1 Listen service</em>，並且 Pod<code>hostNetwork</code>欄位是<code>true</code>，此時，<code>httpGet host</code>是該設置為<code>127.0.0.1</code>。<br>如果 pod 依賴於虛擬主機，這可能是更常見的情況，不建議使用<code>host</code>，而應該利用<code>httpHeaders</code>去定義 <em>host header</em>。</p>
 
       
     </div>
