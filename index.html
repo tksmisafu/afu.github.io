@@ -149,10 +149,7 @@
 <li>CLUSTER-IP 是無法直接存取，需透過<code>kube-proxy、kubectl port-forward</code>等方式存取其中的服務。</li>
 <li>kube-proxy 作用於 service 中，每當 service 建立時一同建立 endpoint 紀錄，並依此紀錄進行 iptable 規則改寫，<br>所以每當變動<code>pod、endpoint</code>紀錄異動皆會改寫 iptable 規則。</li>
 </ol>
-<p>引用<a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/" target="_blank" rel="noopener">官方敘述</a></p>
-<blockquote>
-<p>–service-cluster-ip-range ipNet     Default: 10.0.0.0/24<br>A CIDR notation IP range from which to assign service cluster IPs. This must not overlap with any IP ranges assigned to nodes for pods.</p>
-</blockquote>
+<p>引用<a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/" target="_blank" rel="noopener">官方敘述</a><br><figure class="highlight plain"><figcaption><span>ipNet     Default: 10.0.0.0/24</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A CIDR notation IP range from which to assign service cluster IPs. This must not overlap with any IP ranges assigned to nodes for pods.</span><br></pre></td></tr></table></figure></p>
 <p>CLUSTER-IP 環境變數，我們可以透過 Kuard 服務來觀察<br><img src="/2019/01/15/k8s-service-1/2019-01-16-2.41.57.png" title="[CLUSTER-IP環境變數]"></p>
 
       
