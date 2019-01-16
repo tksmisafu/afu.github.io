@@ -7,18 +7,18 @@
   
   <title>用 docker 架設 php 平台 | FuFu IO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="這幾日，接到一個需求要架設基於 php 的專案軟體因為僅是 demo 用途，故直接想到用 docker 架設此環境。 架設此環境，所需資源有三：PHP、Nginx、MySQL過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。相對 Nginx &amp;amp; MySQL docker image">
+  <meta name="description" content="需求這幾日，接到一個需求要架設基於 php 的專案軟體因為僅是 demo 用途，故直接想到用 docker 架設此環境。 架設此環境，所需資源有三：PHP、Nginx、MySQL過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。相對 Nginx &amp;amp; MySQL docker ima">
 <meta name="keywords" content="docker,php">
 <meta property="og:type" content="article">
 <meta property="og:title" content="用 docker 架設 php 平台">
 <meta property="og:url" content="http://tksmisafu.github.io/2019/01/02/docker-0102/index.html">
 <meta property="og:site_name" content="FuFu IO">
-<meta property="og:description" content="這幾日，接到一個需求要架設基於 php 的專案軟體因為僅是 demo 用途，故直接想到用 docker 架設此環境。 架設此環境，所需資源有三：PHP、Nginx、MySQL過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。相對 Nginx &amp;amp; MySQL docker image">
+<meta property="og:description" content="需求這幾日，接到一個需求要架設基於 php 的專案軟體因為僅是 demo 用途，故直接想到用 docker 架設此環境。 架設此環境，所需資源有三：PHP、Nginx、MySQL過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。相對 Nginx &amp;amp; MySQL docker ima">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-01-02T14:35:11.246Z">
+<meta property="og:updated_time" content="2019-01-16T07:49:49.095Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="用 docker 架設 php 平台">
-<meta name="twitter:description" content="這幾日，接到一個需求要架設基於 php 的專案軟體因為僅是 demo 用途，故直接想到用 docker 架設此環境。 架設此環境，所需資源有三：PHP、Nginx、MySQL過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。相對 Nginx &amp;amp; MySQL docker image">
+<meta name="twitter:description" content="需求這幾日，接到一個需求要架設基於 php 的專案軟體因為僅是 demo 用途，故直接想到用 docker 架設此環境。 架設此環境，所需資源有三：PHP、Nginx、MySQL過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。相對 Nginx &amp;amp; MySQL docker ima">
   
     <link rel="alternate" href="/atom.xml" title="FuFu IO" type="application/atom+xml">
   
@@ -88,10 +88,10 @@
     <div class="article-entry" itemprop="articleBody">
       
         <div id="toc" class="toc-article">
-          <strong class="toc-title">文章目录</strong>
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#問題回顧"><span class="toc-text">問題回顧</span></a></li></ol>
+          <strong class="toc-title">[文章目录]</strong>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#需求"><span class="toc-number">1.</span> <span class="toc-text">需求</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#問題回顧"><span class="toc-number">1.1.</span> <span class="toc-text">問題回顧</span></a></li></ol></li></ol>
         </div>
-        <p>這幾日，接到一個需求要架設基於 php 的專案軟體<br>因為僅是 demo 用途，故直接想到用 docker 架設此環境。</p>
+        <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>這幾日，接到一個需求要架設基於 php 的專案軟體<br>因為僅是 demo 用途，故直接想到用 docker 架設此環境。</p>
 <p>架設此環境，所需資源有三：PHP、Nginx、MySQL<br>過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。<br>相對 Nginx &amp; MySQL docker images 部分，則使用官方資訊下載使用即可。<br><a href="https://hub.docker.com/_/nginx/" target="_blank" rel="noopener">官方 Nginx image</a><br><a href="https://hub.docker.com/_/mysql/" target="_blank" rel="noopener">官方 MySQL image</a></p>
 <p>經過專案探尋與瞭解，也確認了需要的 php extension 清單，<br>基於<a href="https://hub.docker.com/_/php/" target="_blank" rel="noopener">官方 php image</a>，加上 <code>php extension</code> 需求，撰寫 <code>PHP Dockerfile</code> 如下：</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> php:<span class="number">5.6</span>-fpm</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span> apt-get update \</span><br><span class="line">  &amp;&amp; apt-get install -y \</span><br><span class="line">        libfreetype6-dev \</span><br><span class="line">        libjpeg62-turbo-dev \</span><br><span class="line">        libpng-dev \</span><br><span class="line">        libmcrypt-dev \</span><br><span class="line">  &amp;&amp; docker-php-ext-install -j$(nproc) iconv \</span><br><span class="line">  &amp;&amp; docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \</span><br><span class="line">  &amp;&amp; docker-php-ext-install -j$(nproc) gd</span><br><span class="line"></span><br><span class="line">RUN docker-php-ext-install mysql mysqli pdo pdo_mysql mbstring mcrypt sockets</span><br></pre></td></tr></table></figure>
