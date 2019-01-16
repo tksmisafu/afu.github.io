@@ -16,7 +16,7 @@
 <meta property="og:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://tksmisafu.github.io/2019/01/15/k8s-service-1/2019-01-16-2.41.57.png">
-<meta property="og:updated_time" content="2019-01-16T07:00:29.726Z">
+<meta property="og:updated_time" content="2019-01-16T07:02:23.039Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="K8s Service 介紹">
 <meta name="twitter:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
@@ -154,8 +154,14 @@
 <li>CLUSTER-IP 是無法直接存取，需透過<code>kube-proxy、kubectl port-forward</code>等方式存取其中的服務。</li>
 <li>kube-proxy 作用於 service 中，每當 service 建立時一同建立 endpoint 紀錄，並依此紀錄進行 iptable 規則改寫，<br>所以每當變動<code>pod、endpoint</code>紀錄異動皆會改寫 iptable 規則。</li>
 </ol>
-<p>引用<a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/" target="_blank" rel="noopener">官方敘述</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">--service-cluster-ip-range ipNet     Default: 10.0.0.0/24</span><br><span class="line">A CIDR notation IP range from which to assign service cluster IPs.</span><br><span class="line">This must not overlap with any IP ranges assigned to nodes for pods.</span><br></pre></td></tr></table></figure></p>
-<h4 id="CLUSTER-IP-環境變數，我們可以透過-Kuard-服務來觀察"><a href="#CLUSTER-IP-環境變數，我們可以透過-Kuard-服務來觀察" class="headerlink" title="CLUSTER-IP 環境變數，我們可以透過 Kuard 服務來觀察"></a>CLUSTER-IP 環境變數，我們可以透過 Kuard 服務來觀察</h4><img src="/2019/01/15/k8s-service-1/2019-01-16-2.41.57.png" title="[CLUSTER-IP環境變數]">
+<ul>
+<li>引用<a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/" target="_blank" rel="noopener">官方敘述</a><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">--service-cluster-ip-range ipNet     Default: 10.0.0.0/24</span><br><span class="line">A CIDR notation IP range from which to assign service cluster IPs.</span><br><span class="line">This must not overlap with any IP ranges assigned to nodes for pods.</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="CLUSTER-IP-環境變數，我們可以透過-Kuard-服務來觀察"><a href="#CLUSTER-IP-環境變數，我們可以透過-Kuard-服務來觀察" class="headerlink" title="CLUSTER-IP 環境變數，我們可以透過 Kuard 服務來觀察"></a>CLUSTER-IP 環境變數，我們可以透過 Kuard 服務來觀察</h4><ul>
+<li>啟動 kuard <code>[afu@k8s ~]$ kubectl port-forward --address 0.0.0.0 service/alpaca-prod 30111:8080</code></li>
+</ul>
+<img src="/2019/01/15/k8s-service-1/2019-01-16-2.41.57.png" title="[CLUSTER-IP環境變數]">
       
     </div>
     <footer class="article-footer">
