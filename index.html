@@ -84,7 +84,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">文章目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#透過-kubectl-expose-建立-service"><span class="toc-text">透過 kubectl expose 建立 service</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#提前概要："><span class="toc-text">提前概要：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Lab案例："><span class="toc-text">Lab案例：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Lab案例觀察"><span class="toc-text">Lab案例觀察</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#開放-service-對外存取"><span class="toc-text">開放 service 對外存取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#方式1：kubectl-port-forward-轉發-tcp-連線"><span class="toc-text">方式1：kubectl port-forward 轉發 tcp 連線</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方式2：變更現有-service-type"><span class="toc-text">方式2：變更現有 service type</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方式3：kubectl-expose-–type-NodePort"><span class="toc-text">方式3：kubectl expose –type=NodePort</span></a></li></ol></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#服務探索"><span class="toc-text">服務探索</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-關於-Kube-dns-與-Service-CLUSTER-IP-的血緣關係"><span class="toc-text">1.關於 Kube-dns 與 Service CLUSTER-IP 的血緣關係</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-關於-Endpoint"><span class="toc-text">2.關於 Endpoint</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-手動探索服務"><span class="toc-text">3.手動探索服務</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#回顧下，replicaset、service-也都同樣利用到-selector-去定義、篩選出本身與-pod-物件。"><span class="toc-text">回顧下，replicaset、service 也都同樣利用到 selector 去定義、篩選出本身與 pod 物件。</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#kube-proxy-與-CLUSTER-IP-愛恨情仇"><span class="toc-text">kube-proxy 與 CLUSTER-IP 愛恨情仇</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CLUSTER-IP-環境變數，我們可以透過-Kuard-服務來觀察"><span class="toc-text">CLUSTER-IP 環境變數，我們可以透過 Kuard 服務來觀察</span></a></li></ol></li>
+        </div>
         <p>K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。<br>這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。</p>
 <hr>
 <h1 id="透過-kubectl-expose-建立-service"><a href="#透過-kubectl-expose-建立-service" class="headerlink" title="透過 kubectl expose 建立 service"></a>透過 kubectl expose 建立 service</h1><h2 id="提前概要："><a href="#提前概要：" class="headerlink" title="提前概要："></a>提前概要：</h2><ul>
@@ -197,7 +200,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">文章目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#K8s-基本環境安裝"><span class="toc-text">K8s 基本環境安裝</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#注意事項："><span class="toc-text">注意事項：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#稍後進行-kubeadm-init-之後，即會產生此檔案-var-lib-kubelet-config-yaml，而且此服務會自行重啟，直到成功。"><span class="toc-text">稍後進行 kubeadm init 之後，即會產生此檔案 /var/lib/kubelet/config.yaml，而且此服務會自行重啟，直到成功。</span></a></li></ol></li></ol></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#K8s-初始化叢集"><span class="toc-text">K8s 初始化叢集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化之前，先進行-gcr-io-連線測試"><span class="toc-text">初始化之前，先進行 gcr.io 連線測試</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化經驗"><span class="toc-text">初始化經驗</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化參數："><span class="toc-text">初始化參數：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注意事項：-1"><span class="toc-text">注意事項：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化第一次錯誤，原因有二"><span class="toc-text">初始化第一次錯誤，原因有二</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#允許非-root-權限下執行-kubectl"><span class="toc-text">允許非 root 權限下執行 kubectl</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#設定-CNI：Flannel"><span class="toc-text">設定 CNI：Flannel</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#檢查狀態"><span class="toc-text">檢查狀態</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Joining-your-nodes"><span class="toc-text">Joining your nodes</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#進行-Join-nodes-之前，需要確認兩件事情"><span class="toc-text">進行 Join nodes 之前，需要確認兩件事情</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#以上僅是初步完成-K8s-環境安裝"><span class="toc-text">以上僅是初步完成 K8s 環境安裝</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#這篇算是複習、重點回顧"><span class="toc-text">這篇算是複習、重點回顧</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#挑戰在後頭"><span class="toc-text">挑戰在後頭</span></a></li>
+        </div>
         <p>先前，我搭建過乙次 K8s + CRI-O 環境，記錄於下列五篇文章中～<br><a href="https://fufu.gitbook.io/kk8s/installing-kubeadm" target="_blank" rel="noopener">文章一</a><br><a href="https://fufu.gitbook.io/kk8s/installing-crio-kubeadm-init" target="_blank" rel="noopener">文章二</a><br><a href="https://fufu.gitbook.io/kk8s/fix-kubelet-kubeadm-init" target="_blank" rel="noopener">文章三</a><br><a href="https://fufu.gitbook.io/kk8s/installing-a-pod-network-add-on" target="_blank" rel="noopener">文章四</a><br><a href="https://fufu.gitbook.io/kk8s/k8s-add-nodes-join" target="_blank" rel="noopener">文章五</a></p>
 <p>此次，基於上次的經驗，建構公司要使用的 Lab 環境，也為了簡單化，CRI 部分先採用大家熟悉的 Docker。<br>安裝過程，主要也是參照官網說明頁，不再另外記載～ <del>貼上去於此，就沒有什麼意思</del><br>如有注意事項或者錯誤資訊，會在下面記載下來。</p>
 <hr>
@@ -290,7 +296,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">文章目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#第十章節：提示與技巧"><span class="toc-text">第十章節：提示與技巧</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#提示與技巧-P-271"><span class="toc-text">提示與技巧 P.271 ~</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#記錄部署活動"><span class="toc-text">記錄部署活動</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#不要刪除舊擋，而是移動到別的位置"><span class="toc-text">不要刪除舊擋，而是移動到別的位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#部署是整個團隊的責任"><span class="toc-text">部署是整個團隊的責任</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#伺服器應用程式不應該有GUI"><span class="toc-text">伺服器應用程式不應該有GUI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#為新部署預留熱期"><span class="toc-text">為新部署預留熱期</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#快速失敗"><span class="toc-text">快速失敗</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#不要直接對生產環境進行修改"><span class="toc-text">不要直接對生產環境進行修改</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#小結"><span class="toc-text">小結</span></a></li></ol>
+        </div>
         <h1 id="第十章節：提示與技巧"><a href="#第十章節：提示與技巧" class="headerlink" title="第十章節：提示與技巧"></a>第十章節：提示與技巧</h1><h3 id="提示與技巧-P-271"><a href="#提示與技巧-P-271" class="headerlink" title="提示與技巧 P.271 ~"></a>提示與技巧 P.271 ~</h3><p>常常～部署團隊去部署不熟悉的系統或服務，就是產生不愉快經驗的開始。<br>因此～讓真正執行部署的人，應該參與部署流程的建立。從頭建立團隊情感。<br>部署的流程文件，也就可以從頭開始建立、修正、驗證，達到正確有效率的部署基礎。</p>
 <h3 id="記錄部署活動"><a href="#記錄部署活動" class="headerlink" title="記錄部署活動"></a>記錄部署活動</h3><p>如果軟體開發出的自動化部署，記錄那些環境因素、套件需求、檔案與目錄權限是非常重要的。<br>部署後日誌、部署清單也是必要留下的。</p>
 <h3 id="不要刪除舊擋，而是移動到別的位置"><a href="#不要刪除舊擋，而是移動到別的位置" class="headerlink" title="不要刪除舊擋，而是移動到別的位置"></a>不要刪除舊擋，而是移動到別的位置</h3><p>如前一篇提到：<strong><code>應該要保留一份舊版本的副本區</code></strong>～相同的基本原則，還沒升級、部署完成之前，務必留下後路，不要置於自己不義的情況下。<br>UNIX環境中最佳實踐：把應用程式每個版本部署到單獨的目錄中，再透過軟連結來指向目標版本。<br>如此，版本的切換(還原)變得更加容易。</p>
@@ -351,7 +360,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">文章目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#第十章節：持續部署"><span class="toc-text">第十章節：持續部署</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#持續部署-P-267"><span class="toc-text">持續部署 P.267 ~</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#多帶著這隻鳥跟著持續部署計畫前進，會有助於版本正確性更加有信心，問題風險控管更加有利。"><span class="toc-text">多帶著這隻鳥跟著持續部署計畫前進，會有助於版本正確性更加有信心，問題風險控管更加有利。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#持續發佈使用者需自行安裝的軟體-P-269"><span class="toc-text">持續發佈使用者需自行安裝的軟體 P.269 ~</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#提示與技巧-P-271"><span class="toc-text">提示與技巧 P.271 ~</span></a></li></ol></li></ol>
+        </div>
         <h1 id="第十章節：持續部署"><a href="#第十章節：持續部署" class="headerlink" title="第十章節：持續部署"></a>第十章節：持續部署</h1><h3 id="持續部署-P-267"><a href="#持續部署-P-267" class="headerlink" title="持續部署 P.267 ~"></a>持續部署 P.267 ~</h3><p>合乎「持續部署」邏輯的極限。就是每當有版本通過自動化測試，就將其部署到生產環境中，<br>這是由 Timothy Fitz 先生創造的專業術語。<br>一直進行部署，也不是說只要願意就進行部署，關鍵點還是在於完成自動化測試，並且持續部署到生產環境中。</p>
 <p>透過部署流水線，讓每次提交的程式通過了全部的自動化測試，就應該直接部署到生產環境中。如果想讓這做法不出問題，各種自動化測試就必須覆蓋整個應用程式。</p>
 <blockquote><p>自動化測試項目：單元測試、元件測試、功能性測試、非功能性驗收測試。</p>
@@ -473,7 +485,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">文章目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#問題回顧"><span class="toc-text">問題回顧</span></a></li></ol>
+        </div>
         <p>這幾日，接到一個需求要架設基於 php 的專案軟體<br>因為僅是 demo 用途，故直接想到用 docker 架設此環境。</p>
 <p>架設此環境，所需資源有三：PHP、Nginx、MySQL<br>過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。<br>相對 Nginx &amp; MySQL docker images 部分，則使用官方資訊下載使用即可。<br><a href="https://hub.docker.com/_/nginx/" target="_blank" rel="noopener">官方 Nginx image</a><br><a href="https://hub.docker.com/_/mysql/" target="_blank" rel="noopener">官方 MySQL image</a></p>
 <p>經過專案探尋與瞭解，也確認了需要的 php extension 清單，<br>基於<a href="https://hub.docker.com/_/php/" target="_blank" rel="noopener">官方 php image</a>，加上 <code>php extension</code> 需求，撰寫 <code>PHP Dockerfile</code> 如下：</p>
@@ -542,7 +557,10 @@ ERROR: &#39;phpize&#39; failed</code></p>
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">文章目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#搭建-Consul-server-mode"><span class="toc-text">搭建 Consul server mode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#搭建-Consul-client-mode"><span class="toc-text">搭建 Consul client mode</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#模擬-Linux-node-環境，進行-Member-join-與-Health-Checks"><span class="toc-text">模擬 Linux node 環境，進行 Member join 與 Health Checks</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#啟用-Consul-agent-client-mode"><span class="toc-text">啟用 Consul agent client mode</span></a></li></ol></li></ol></li></ol>
+        </div>
         <p>今日首搭 Consul 服務環境，以下簡單扼要做紀錄<br>環境說明：</p>
 <ul>
 <li>Consul server mode: <code>Ubuntu 18.04</code> <code>192.168.42.12</code></li>
@@ -629,7 +647,10 @@ ERROR: &#39;phpize&#39; failed</code></p>
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">文章目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#12月25日-聖誕節快樂～"><span class="toc-text">12月25日 聖誕節快樂～</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#創建紀錄"><span class="toc-text">創建紀錄</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Github-pages-服務註冊與創建"><span class="toc-text">Github pages 服務註冊與創建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HEXO安裝"><span class="toc-text">HEXO安裝</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Github-pages-與-Hexo-整合"><span class="toc-text">Github pages 與 Hexo 整合</span></a></li></ol></li></ol></li></ol>
+        </div>
         <h1 id="12月25日-聖誕節快樂～"><a href="#12月25日-聖誕節快樂～" class="headerlink" title="12月25日 聖誕節快樂～"></a>12月25日 聖誕節快樂～</h1><p>也是今日，第一次創建部落格資源天地，其用意是將平時工作小心得、重要記載等等，以文章方式予以記錄下來，呈現於此！</p>
 <p>第一篇，就是紀錄此部落格的誕生過程～<br>在聖誕夜之前，我在 gitbook 記載了 K8s 研讀的過程與心得，也有另一篇關於公司專案 Ceph 的過程記載，但礙於 Gitbook 免付費授權條件下，只能各有一篇 public \ Private 文章，經過長期文章考量，付費條件有點稍貴，故沒選擇採購付費授權，暫且不繼續於 Gitbook 上寫文章。</p>
 <p>在聖誕夜之後，開始搜尋部落格有哪些資源可以使用，心想自己想要的條件有：串接 github 版控、支援 Markdown、無需自行架站～<br>最後選擇了蠻多人使用的 <a href="https://pages.github.com/" target="_blank" rel="noopener">github pages</a> 服務 + <a href="https://hexo.io/zh-tw/" target="_blank" rel="noopener">Hexo</a></p>
@@ -684,7 +705,10 @@ ERROR: &#39;phpize&#39; failed</code></p>
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">文章目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Quick-Start"><span class="toc-text">Quick Start</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-a-new-post"><span class="toc-text">Create a new post</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Run-server"><span class="toc-text">Run server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generate-static-files"><span class="toc-text">Generate static files</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Deploy-to-remote-sites"><span class="toc-text">Deploy to remote sites</span></a></li></ol></li></ol>
+        </div>
         <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
 <h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
 <p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
