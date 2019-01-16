@@ -15,10 +15,12 @@
 <meta property="og:site_name" content="FuFu IO">
 <meta property="og:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-01-16T06:49:37.853Z">
+<meta property="og:image" content="http://tksmisafu.github.io/2019/01/15/k8s-service-1/2019-01-16-2.41.57.png">
+<meta property="og:updated_time" content="2019-01-16T06:56:32.502Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="K8s Service 介紹">
 <meta name="twitter:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
+<meta name="twitter:image" content="http://tksmisafu.github.io/2019/01/15/k8s-service-1/2019-01-16-2.41.57.png">
   
     <link rel="alternate" href="/atom.xml" title="FuFu IO" type="application/atom+xml">
   
@@ -156,7 +158,7 @@
 <blockquote>
 <p>–service-cluster-ip-range ipNet     Default: 10.0.0.0/24<br>A CIDR notation IP range from which to assign service cluster IPs. This must not overlap with any IP ranges assigned to nodes for pods.</p>
 </blockquote>
-<p>CLUSTER-IP 環境變數，我們可以透過 Kuard 服務來觀察</p>
+<p>CLUSTER-IP 環境變數，我們可以透過 Kuard 服務來觀察<br><img src="/2019/01/15/k8s-service-1/2019-01-16-2.41.57.png" title="[CLUSTER-IP環境變數]"></p>
 
       
     </div>
