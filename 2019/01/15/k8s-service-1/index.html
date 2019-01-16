@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="FuFu IO">
 <meta property="og:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-01-15T16:55:31.760Z">
+<meta property="og:updated_time" content="2019-01-16T06:21:18.144Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="K8s Service 介紹">
 <meta name="twitter:description" content="K8s Service 是為了所部署的應用程式，能夠開放對外連線，確保可提供應用服務使用，發揮其應用價值。這篇，來了解複雜的 Service 細節，對於部署應用有基本的幫助。  透過 kubectl expose 建立 service提前概要： 從現有的 Deployment、ReplicaSet 物件中，建立 Service kubectl expose 執行條件：物件中必須要有 selecto">
@@ -146,7 +146,17 @@
 <li><code>-l, --selector=&#39;&#39;: Selector (label query) to filter on, supports &#39;=&#39;, &#39;==&#39;, and &#39;!=&#39;.(e.g. -l key1=value1,key2=value2)</code><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 篩選出 ver=2 的 alpaca pod 物件</span></span><br><span class="line">afu@afu-P5440UA:~$ kubectl get pod -o wide --selector=ver=2,app=alpaca</span><br><span class="line">NAME                  READY   STATUS    RESTARTS   AGE   IP            NODE       NOMINATED NODE</span><br><span class="line">alpaca-prod22-9zrwf   1/1     Running   0          33m   172.17.0.8    minikube   &lt;none&gt;</span><br><span class="line">alpaca-prod22-fh44h   1/1     Running   0          33m   172.17.0.10   minikube   &lt;none&gt;</span><br><span class="line">alpaca-prod22-zdtrv   1/1     Running   0          33m   172.17.0.9    minikube   &lt;none&gt;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h4 id="回顧下，replicaset、service-也都同樣利用到-selector-去定義、篩選出本身與-pod-物件。"><a href="#回顧下，replicaset、service-也都同樣利用到-selector-去定義、篩選出本身與-pod-物件。" class="headerlink" title="回顧下，replicaset、service 也都同樣利用到 selector 去定義、篩選出本身與 pod 物件。"></a>回顧下，replicaset、service 也都同樣利用到 selector 去定義、篩選出本身與 pod 物件。</h4>
+<h4 id="回顧下，replicaset、service-也都同樣利用到-selector-去定義、篩選出本身與-pod-物件。"><a href="#回顧下，replicaset、service-也都同樣利用到-selector-去定義、篩選出本身與-pod-物件。" class="headerlink" title="回顧下，replicaset、service 也都同樣利用到 selector 去定義、篩選出本身與 pod 物件。"></a>回顧下，replicaset、service 也都同樣利用到 selector 去定義、篩選出本身與 pod 物件。</h4><hr>
+<h1 id="kube-proxy-與-CLUSTER-IP-愛恨情仇"><a href="#kube-proxy-與-CLUSTER-IP-愛恨情仇" class="headerlink" title="kube-proxy 與 CLUSTER-IP 愛恨情仇"></a>kube-proxy 與 CLUSTER-IP 愛恨情仇</h1><ol>
+<li>我對 Service CLUSTER-IP 的見解是摸不著邊，不存在於 Host、CRI network 中，是被包裹在 iptable 中。</li>
+<li>CLUSTER-IP 是無法直接存取，需透過<code>kube-proxy、kubectl port-forward</code>等方式存取其中的服務。</li>
+<li>kube-proxy 作用於 service 中，每當 service 建立時一同建立 endpoint 紀錄，並依此紀錄進行 iptable 規則改寫，<br>所以每當變動<code>pod、endpoint</code>紀錄異動皆會改寫 iptable 規則。</li>
+</ol>
+<p>引用<a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/" target="_blank" rel="noopener">官方敘述</a></p>
+<blockquote>
+<p>–service-cluster-ip-range ipNet     Default: 10.0.0.0/24<br>A CIDR notation IP range from which to assign service cluster IPs. This must not overlap with any IP ranges assigned to nodes for pods.</p>
+</blockquote>
+
       
     </div>
     <footer class="article-footer">
