@@ -15,10 +15,12 @@
 <meta property="og:site_name" content="FuFu IO">
 <meta property="og:description" content="建置完成 K8s 環境後，總是需要有個操作介面，給予管理人員使用。官方有提供 Dashboard GUI 介面，下面紀錄安裝過程～ 起手式 deploy dashboard我是參考官網資訊頁來建置 下載 kubernetes-dashboard.yaml1$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/s">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-01-18T13:29:31.530Z">
+<meta property="og:image" content="http://tksmisafu.github.io/2019/01/18/k8s-dashboard-1/new-dashboard.jpg">
+<meta property="og:updated_time" content="2019-01-18T13:30:50.978Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="人生第一個 K8s Dashboard ^.^">
 <meta name="twitter:description" content="建置完成 K8s 環境後，總是需要有個操作介面，給予管理人員使用。官方有提供 Dashboard GUI 介面，下面紀錄安裝過程～ 起手式 deploy dashboard我是參考官網資訊頁來建置 下載 kubernetes-dashboard.yaml1$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/s">
+<meta name="twitter:image" content="http://tksmisafu.github.io/2019/01/18/k8s-dashboard-1/new-dashboard.jpg">
   
     <link rel="alternate" href="/atom.xml" title="FuFu IO" type="application/atom+xml">
   
@@ -91,7 +93,7 @@
           <strong class="toc-title">[文章目录]</strong>
         <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#起手式-deploy-dashboard"><span class="toc-text">起手式 deploy dashboard</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#下載-kubernetes-dashboard-yaml"><span class="toc-text">下載 kubernetes-dashboard.yaml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改-kubernetes-dashboard-yaml"><span class="toc-text">修改 kubernetes-dashboard.yaml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#建立-kubernetes-dashboard"><span class="toc-text">建立 kubernetes-dashboard</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Create-An-Authentication-Token-RBAC"><span class="toc-text">Create An Authentication Token (RBAC)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-Service-Account"><span class="toc-text">Create Service Account</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-ClusterRoleBinding"><span class="toc-text">Create ClusterRoleBinding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#deploy-Account-amp-ClusterRoleBinding"><span class="toc-text">deploy Account &amp; ClusterRoleBinding</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#存取-Dashboard"><span class="toc-text">存取 Dashboard</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Bearer-Token"><span class="toc-text">Bearer Token</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#實作-Kubeconfig-file"><span class="toc-text">實作 Kubeconfig file</span></a></li></ol></li></ol></li></ol>
         </div>
-        <img class="new-dashboard.jpg [dashboard]">
+        <img src="/2019/01/18/k8s-dashboard-1/new-dashboard.jpg" title="[dashboard]">
 <p>建置完成 K8s 環境後，總是需要有個操作介面，給予管理人員使用。<br>官方有提供 Dashboard GUI 介面，下面紀錄安裝過程～</p>
 <h1 id="起手式-deploy-dashboard"><a href="#起手式-deploy-dashboard" class="headerlink" title="起手式 deploy dashboard"></a>起手式 deploy dashboard</h1><p>我是參考<a href="https://github.com/kubernetes/dashboard" target="_blank" rel="noopener">官網資訊頁</a>來建置</p>
 <h2 id="下載-kubernetes-dashboard-yaml"><a href="#下載-kubernetes-dashboard-yaml" class="headerlink" title="下載 kubernetes-dashboard.yaml"></a>下載 kubernetes-dashboard.yaml</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml</span><br></pre></td></tr></table></figure>
