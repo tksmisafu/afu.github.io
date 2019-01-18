@@ -62,6 +62,59 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-k8s-dashboard-1" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/18/k8s-dashboard-1/" class="article-date">
+  <time datetime="2019-01-18T10:14:58.000Z" itemprop="datePublished">2019-01-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/18/k8s-dashboard-1/">人生第一個 K8s Dashboard ^.^</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">[文章目录]</strong>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#起手式-deploy-dashboard"><span class="toc-text">起手式 deploy dashboard</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#下載-kubernetes-dashboard-yaml"><span class="toc-text">下載 kubernetes-dashboard.yaml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改-kubernetes-dashboard-yaml"><span class="toc-text">修改 kubernetes-dashboard.yaml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#建立-kubernetes-dashboard"><span class="toc-text">建立 kubernetes-dashboard</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Create-An-Authentication-Token-RBAC"><span class="toc-text">Create An Authentication Token (RBAC)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-Service-Account"><span class="toc-text">Create Service Account</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Create-ClusterRoleBinding"><span class="toc-text">Create ClusterRoleBinding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#deploy-Account-amp-ClusterRoleBinding"><span class="toc-text">deploy Account &amp; ClusterRoleBinding</span></a></li></ol></li></ol></li></ol>
+        </div>
+        <p>建置完成 K8s 環境後，總是需要有個操作介面，給予管理人員使用。<br>官方有提供 Dashboard GUI 介面，下面紀錄安裝過程～</p>
+<h1 id="起手式-deploy-dashboard"><a href="#起手式-deploy-dashboard" class="headerlink" title="起手式 deploy dashboard"></a>起手式 deploy dashboard</h1><p>我是參考<a href="https://github.com/kubernetes/dashboard" target="_blank" rel="noopener">官網資訊頁</a>來建置</p>
+<h2 id="下載-kubernetes-dashboard-yaml"><a href="#下載-kubernetes-dashboard-yaml" class="headerlink" title="下載 kubernetes-dashboard.yaml"></a>下載 kubernetes-dashboard.yaml</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml</span><br></pre></td></tr></table></figure>
+<h2 id="修改-kubernetes-dashboard-yaml"><a href="#修改-kubernetes-dashboard-yaml" class="headerlink" title="修改 kubernetes-dashboard.yaml"></a>修改 kubernetes-dashboard.yaml</h2><p><code>service type</code>= NodePort</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    k8s-app:</span> <span class="string">kubernetes-dashboard</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">kubernetes-dashboard</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">    - port:</span> <span class="number">443</span></span><br><span class="line"><span class="attr">      targetPort:</span> <span class="number">8443</span></span><br><span class="line">  <span class="comment">#    nodePort: 30001</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">NodePort</span>    <span class="comment"># &lt;&lt;&lt;～～～～</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    k8s-app:</span> <span class="string">kubernetes-dashboard</span></span><br></pre></td></tr></table></figure>
+<h2 id="建立-kubernetes-dashboard"><a href="#建立-kubernetes-dashboard" class="headerlink" title="建立 kubernetes-dashboard"></a>建立 kubernetes-dashboard</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[afu@dev-k8sm1 ~]$ kc apply -f kubernetes-dashboard.yaml</span><br><span class="line">secret/kubernetes-dashboard-certs created</span><br><span class="line">serviceaccount/kubernetes-dashboard created</span><br><span class="line">role.rbac.authorization.k8s.io/kubernetes-dashboard-minimal created</span><br><span class="line">rolebinding.rbac.authorization.k8s.io/kubernetes-dashboard-minimal created</span><br><span class="line">deployment.apps/kubernetes-dashboard created</span><br><span class="line">service/kubernetes-dashboard created</span><br></pre></td></tr></table></figure>
+<h2 id="Create-An-Authentication-Token-RBAC"><a href="#Create-An-Authentication-Token-RBAC" class="headerlink" title="Create An Authentication Token (RBAC)"></a>Create An Authentication Token (RBAC)</h2><p>參考<a href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user" target="_blank" rel="noopener">官方說明頁</a></p>
+<h3 id="Create-Service-Account"><a href="#Create-Service-Account" class="headerlink" title="Create Service Account"></a>Create Service Account</h3><p><code>k8s-dashboard-adminuser.yml</code><br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="Create-ClusterRoleBinding"><a href="#Create-ClusterRoleBinding" class="headerlink" title="Create ClusterRoleBinding"></a>Create ClusterRoleBinding</h3><p><code>k8s-dashboard-CRB.yml</code><br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line"><span class="attr">  apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="attr">  kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">cluster-admin</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line"><span class="attr">- kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="deploy-Account-amp-ClusterRoleBinding"><a href="#deploy-Account-amp-ClusterRoleBinding" class="headerlink" title="deploy Account &amp; ClusterRoleBinding"></a>deploy Account &amp; ClusterRoleBinding</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[afu@dev-k8sm1 ~]$ kc apply -f k8s-dashboard-adminuser.yml -f k8s-dashboard-CRB.yml</span><br><span class="line">serviceaccount/admin-user created</span><br><span class="line">clusterrolebinding.rbac.authorization.k8s.io/admin-user created</span><br></pre></td></tr></table></figure>
+<p>存取網址：<a href="https://192.168.100.174:NodePort/" target="_blank" rel="noopener">https://192.168.100.174:NodePort/</a></p>
+<p><img src="/2019/01/18/k8s-dashboard-1/new-dashboard.jpg" title="[dashboard]}</p>"></p>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://tksmisafu.github.io/2019/01/18/k8s-dashboard-1/" data-id="cjr1w1b3f0001r3xhbqbulyx8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Dashboard/">Dashboard</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Service/">Service</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-k8s-service-1" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/01/15/k8s-service-1/" class="article-date">
@@ -218,7 +271,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/15/k8s-service-1/" data-id="cjqyuv98k000j3nxh3facu1ie" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/15/k8s-service-1/" data-id="cjr1w1b4n000qr3xhsyigc4pc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service/">service</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
@@ -314,7 +367,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/14/centos7-install-k8s/" data-id="cjqyuv98200013nxhuhn5rlpi" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/14/centos7-install-k8s/" data-id="cjr1w1b3b0000r3xhqcm447fi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li></ul>
@@ -378,7 +431,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-2/" data-id="cjqyuv98a00083nxh4jq71d3z" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-2/" data-id="cjr1w1b3r0009r3xhnh260ojq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CD/">CD</a></li></ul>
@@ -503,7 +556,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/" data-id="cjqyuv98900073nxhlpm3ggpv" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/" data-id="cjr1w1b3l0005r3xhnox855v2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CD/">CD</a></li></ul>
@@ -544,8 +597,8 @@
         <h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>這幾日，接到一個需求要架設基於 php 的專案軟體<br>因為僅是 demo 用途，故直接想到用 docker 架設此環境。</p>
 <p>架設此環境，所需資源有三：PHP、Nginx、MySQL<br>過去有架設過，應該問題不大，但每個專案各有不同的 php extension 需求，所以了解專案並於 docker php images 中實現是最明顯的課題。<br>相對 Nginx &amp; MySQL docker images 部分，則使用官方資訊下載使用即可。<br><a href="https://hub.docker.com/_/nginx/" target="_blank" rel="noopener">官方 Nginx image</a><br><a href="https://hub.docker.com/_/mysql/" target="_blank" rel="noopener">官方 MySQL image</a></p>
 <p>經過專案探尋與瞭解，也確認了需要的 php extension 清單，<br>基於<a href="https://hub.docker.com/_/php/" target="_blank" rel="noopener">官方 php image</a>，加上 <code>php extension</code> 需求，撰寫 <code>PHP Dockerfile</code> 如下：</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> php:<span class="number">5.6</span>-fpm</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span> apt-get update \</span><br><span class="line">  &amp;&amp; apt-get install -y \</span><br><span class="line">        libfreetype6-dev \</span><br><span class="line">        libjpeg62-turbo-dev \</span><br><span class="line">        libpng-dev \</span><br><span class="line">        libmcrypt-dev \</span><br><span class="line">  &amp;&amp; docker-php-ext-install -j$(nproc) iconv \</span><br><span class="line">  &amp;&amp; docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \</span><br><span class="line">  &amp;&amp; docker-php-ext-install -j$(nproc) gd</span><br><span class="line"></span><br><span class="line">RUN docker-php-ext-install mysql mysqli pdo pdo_mysql mbstring mcrypt sockets</span><br></pre></td></tr></table></figure>
-<p>php 專案中，基本上都需要用上 composer 指令，進行專案初始化<br>可使用<a href="https://hub.docker.com/_/composer/" target="_blank" rel="noopener">官方 composer</a>，並且也需要搭配 <code>php extension</code> 需求，撰寫 <code>PHP Dockerfile</code> 如下：<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> composer</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span> apk upgrade --update &amp;&amp; \</span><br><span class="line">    apk --no-cache add libmcrypt-dev mysql-client libpng-dev $PHPIZE_DEPS \</span><br><span class="line">    &amp;&amp; pecl install mcrypt-1.0.1 \</span><br><span class="line">    &amp;&amp; docker-php-ext-enable mcrypt</span><br><span class="line"></span><br><span class="line">RUN docker-php-ext-install -j$(nproc) gd mysqli</span><br><span class="line">RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql iconv mbstring sockets</span><br><span class="line"></span><br><span class="line">WORKDIR /app</span><br><span class="line"></span><br><span class="line">ENTRYPOINT ["/bin/sh", "/docker-entrypoint.sh"]</span><br><span class="line"></span><br><span class="line">CMD ["composer"]</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> php:<span class="number">5.6</span>-fpm</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update \</span></span><br><span class="line"><span class="bash">  &amp;&amp; apt-get install -y \</span></span><br><span class="line"><span class="bash">        libfreetype6-dev \</span></span><br><span class="line"><span class="bash">        libjpeg62-turbo-dev \</span></span><br><span class="line"><span class="bash">        libpng-dev \</span></span><br><span class="line"><span class="bash">        libmcrypt-dev \</span></span><br><span class="line"><span class="bash">  &amp;&amp; docker-php-ext-install -j$(nproc) iconv \</span></span><br><span class="line"><span class="bash">  &amp;&amp; docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \</span></span><br><span class="line"><span class="bash">  &amp;&amp; docker-php-ext-install -j$(nproc) gd</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN docker-php-ext-install mysql mysqli pdo pdo_mysql mbstring mcrypt sockets</span></span><br></pre></td></tr></table></figure>
+<p>php 專案中，基本上都需要用上 composer 指令，進行專案初始化<br>可使用<a href="https://hub.docker.com/_/composer/" target="_blank" rel="noopener">官方 composer</a>，並且也需要搭配 <code>php extension</code> 需求，撰寫 <code>PHP Dockerfile</code> 如下：<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> composer</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apk upgrade --update &amp;&amp; \</span></span><br><span class="line"><span class="bash">    apk --no-cache add libmcrypt-dev mysql-client libpng-dev <span class="variable">$PHPIZE_DEPS</span> \</span></span><br><span class="line"><span class="bash">    &amp;&amp; pecl install mcrypt-1.0.1 \</span></span><br><span class="line"><span class="bash">    &amp;&amp; docker-php-ext-enable mcrypt</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">RUN docker-php-ext-install -j$(nproc) gd mysqli</span></span><br><span class="line"><span class="bash">RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql iconv mbstring sockets</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">WORKDIR /app</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">ENTRYPOINT [<span class="string">"/bin/sh"</span>, <span class="string">"/docker-entrypoint.sh"</span>]</span></span><br><span class="line"><span class="bash"></span></span><br><span class="line"><span class="bash">CMD [<span class="string">"composer"</span>]</span></span><br></pre></td></tr></table></figure></p>
 <p>撰寫後，進行 docker build 工作<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># docker build 指令</span></span><br><span class="line">docker build -t tag-name ./</span><br></pre></td></tr></table></figure></p>
 <p>composer install &amp; create-project 指令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># composer create-project project/name</span></span><br><span class="line">sudo docker run --rm --interactive --tty -v /Documents/<span class="built_in">test</span>:/app --user $(id -u):$(id -g) composer create-project project/name</span><br><span class="line"><span class="comment"># composer install</span></span><br><span class="line">sudo docker run --rm --interactive --tty -v /Documents/<span class="built_in">test</span>:/app --user $(id -u):$(id -g) composer install</span><br></pre></td></tr></table></figure></p>
 <p>寫此篇其最主要紀錄的是過程中的問題概要，留下紀錄作為後續回顧。</p>
@@ -575,7 +628,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/02/docker-0102/" data-id="cjqyuv97x00003nxhohl92czi" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/02/docker-0102/" data-id="cjr1w1b3l0004r3xh0syze5ox" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
@@ -665,7 +718,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/26/consul/" data-id="cjqyuv98700043nxhs66iwyd2" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/26/consul/" data-id="cjr1w1b3q0008r3xhr6u6bddw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
@@ -725,7 +778,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/26/new-blog/" data-id="cjqyuv98800053nxhop2a8gb0" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/26/new-blog/" data-id="cjr1w1b3s000br3xh7uvvduqk" class="article-share-link">Share</a>
       
       
     </footer>
@@ -774,7 +827,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/25/hello-world/" data-id="cjqyuv98500033nxhswwdbp4k" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/25/hello-world/" data-id="cjr1w1b3j0003r3xhgdi0jnbm" class="article-share-link">Share</a>
       
       
     </footer>
@@ -797,7 +850,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dashboard/">Dashboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Service/">Service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
     </div>
   </div>
 
@@ -807,7 +860,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/CD/" style="font-size: 20px;">CD</a> <a href="/tags/K8s/" style="font-size: 20px;">K8s</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/service-discovery/" style="font-size: 20px;">service_discovery</a>
+      <a href="/tags/CD/" style="font-size: 15px;">CD</a> <a href="/tags/Dashboard/" style="font-size: 10px;">Dashboard</a> <a href="/tags/K8s/" style="font-size: 20px;">K8s</a> <a href="/tags/Service/" style="font-size: 10px;">Service</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/service-discovery/" style="font-size: 15px;">service_discovery</a>
     </div>
   </div>
 
@@ -829,6 +882,10 @@ ERROR: &#39;phpize&#39; failed</code></p>
       <ul>
         
           <li>
+            <a href="/2019/01/18/k8s-dashboard-1/">人生第一個 K8s Dashboard ^.^</a>
+          </li>
+        
+          <li>
             <a href="/2019/01/15/k8s-service-1/">K8s Service 介紹</a>
           </li>
         
@@ -842,10 +899,6 @@ ERROR: &#39;phpize&#39; failed</code></p>
         
           <li>
             <a href="/2019/01/03/kcd-10chapter-1/">CD-第十章節心得-1</a>
-          </li>
-        
-          <li>
-            <a href="/2019/01/02/docker-0102/">用 docker 架設 php 平台</a>
           </li>
         
       </ul>
