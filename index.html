@@ -62,6 +62,65 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-GKE-node-migration" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/22/GKE-node-migration/" class="article-date">
+  <time datetime="2019-01-22T07:50:22.000Z" itemprop="datePublished">2019-01-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/22/GKE-node-migration/">GKE node migration</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">[文章目录]</strong>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#先讓-node-隔離"><span class="toc-text">先讓 node 隔離</span></a></li></ol>
+        </div>
+        <p>事情是這樣的～<br>我的 GKE Lab 上初次使用 MACHINE_TYPE:g1-small，僅具有 1 cpu 資源<br>在 Master 角色上，此規格不敷使用，故有轉移至更高規格 node 上的想法。</p>
+<p>我參照此篇說明，去實作，文章中提到的是以整個 nodepool 為遷移範例<br>我是僅針對單一 node 去實作。作法如下：</p>
+<h1 id="先讓-node-隔離"><a href="#先讓-node-隔離" class="headerlink" title="先讓 node 隔離"></a>先讓 node 隔離</h1><p><code>kubectl cordon</code> 此隔離動作，並不影響現有 node 上面的服務、pod 的運作，僅影響著後續新的 pod 需求，並不會於被隔離狀態下的 node 部署。</p>
+<ol>
+<li><p>先於 GKE 上，產生資源足夠的新 node pool，例如 MACHINE_TYPE:n1-standard-2</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 觀察 node-pools list</span></span><br><span class="line">$ gcloud container node-pools list --cluster afu-first-cluster-1</span><br><span class="line">NAME    MACHINE_TYPE   DISK_SIZE_GB  NODE_VERSION</span><br><span class="line">pool-1  g1-small       30            1.11.6-gke.2</span><br><span class="line">pool-2  n1-standard-2  100           1.11.6-gke.2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>舊 node 設定隔離：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 觀察目前 pool-1 既有 node info</span></span><br><span class="line">$ kubectl get nodes -l cloud.google.com/gke-nodepool=pool-1</span><br><span class="line">NAME                                           STATUS   ROLES    AGE   VERSION</span><br><span class="line">gke-afu-first-cluster-1-pool-1-dd90def6-7h0t   Ready    &lt;none&gt;   21h   v1.11.6-gke.2</span><br><span class="line">gke-afu-first-cluster-1-pool-1-dd90def6-dhfn   Ready    &lt;none&gt;   21h   v1.11.6-gke.2</span><br><span class="line">gke-afu-first-cluster-1-pool-1-dd90def6-lrcb   Ready    &lt;none&gt;   23h   v1.11.6-gke.2</span><br><span class="line">gke-afu-first-cluster-1-pool-1-dd90def6-slvd   Ready    &lt;none&gt;   21h   v1.11.6-gke.2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 針對 node:gke-afu-first-cluster-1-pool-1-dd90def6-lrcb 進行隔離</span></span><br><span class="line">$ kubectl cordon gke-afu-first-cluster-1-pool-1-dd90def6-lrcb</span><br><span class="line">node/gke-afu-first-cluster-1-pool-1-dd90def6-lrcb cordoned</span><br><span class="line"></span><br><span class="line"><span class="comment"># 觀察目前 pool-1 既有 node info</span></span><br><span class="line">$ kubectl get nodes -l cloud.google.com/gke-nodepool=pool-1</span><br><span class="line">NAME                                           STATUS                     ROLES    AGE   VERSION</span><br><span class="line">gke-afu-first-cluster-1-pool-1-dd90def6-7h0t   Ready                      &lt;none&gt;   21h   v1.11.6-gke.2</span><br><span class="line">gke-afu-first-cluster-1-pool-1-dd90def6-dhfn   Ready                      &lt;none&gt;   21h   v1.11.6-gke.2</span><br><span class="line">gke-afu-first-cluster-1-pool-1-dd90def6-lrcb   Ready,SchedulingDisabled   &lt;none&gt;   23h   v1.11.6-gke.2</span><br><span class="line">gke-afu-first-cluster-1-pool-1-dd90def6-slvd   Ready                      &lt;none&gt;   21h   v1.11.6-gke.2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>舊 node 進行服務遷移<br><code>kubectl drain</code> 此動作，會促使節點上的 pod 遷移至其他節點。</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 指定 node 進行遷移，出現 DaemonSet pod 無法遷移的情況。</span></span><br><span class="line">$ kubectl drain --force gke-afu-first-cluster-1-pool-1-dd90def6-lrcb</span><br><span class="line">node/gke-afu-first-cluster-1-pool-1-dd90def6-lrcb already cordoned</span><br><span class="line">error: unable to drain node <span class="string">"gke-afu-first-cluster-1-pool-1-dd90def6-lrcb"</span>, aborting <span class="built_in">command</span>...</span><br><span class="line"></span><br><span class="line">There are pending nodes to be drained:</span><br><span class="line"> gke-afu-first-cluster-1-pool-1-dd90def6-lrcb</span><br><span class="line">error: DaemonSet-managed pods (use --ignore-daemonsets to ignore): consul-zk9wn, calico-node-6fdsp, ip-masq-agent-l85nd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定 node 進行遷移，新增參數</span></span><br><span class="line"><span class="comment"># --ignore-daemonsets 忽略 DaemonSet pod</span></span><br><span class="line"><span class="comment"># --delete-local-data 刪除節點上資料</span></span><br><span class="line"><span class="comment"># --grace-period 設定寬限期</span></span><br><span class="line">$ kubectl drain --force --ignore-daemonsets --delete-local-data --grace-period=10 gke-afu-first-cluster-1-pool-1-dd90def6-lrcb</span><br><span class="line">node/gke-afu-first-cluster-1-pool-1-dd90def6-lrcb already cordoned</span><br><span class="line">WARNING: Ignoring DaemonSet-managed pods: consul-zk9wn, calico-node-6fdsp, ip-masq-agent-l85nd</span><br><span class="line">pod/l7-default-backend-7ff48cffd7-zbd8m evicted</span><br><span class="line">pod/kube-dns-autoscaler-67c97c87fb-nc2rd evicted</span><br><span class="line">pod/tiller-deploy-77c96688d7-jckdw evicted</span><br><span class="line">pod/metrics-server-v0.2.1-fd596d746-cdp8p evicted</span><br><span class="line">pod/calico-typha-horizontal-autoscaler-5ff7f558cc-zms8d evicted</span><br><span class="line">pod/calico-typha-vertical-autoscaler-5d4bf57df5-pwjvn evicted</span><br><span class="line">pod/calico-typha-5b857668fd-lzkf7 evicted</span><br><span class="line">pod/calico-node-vertical-autoscaler-547d98499d-nt874 evicted</span><br><span class="line">pod/kube-dns-7549f99fcc-kbvkt evicted</span><br><span class="line">node/gke-afu-first-cluster-1-pool-1-dd90def6-lrcb evicted</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>最後在 GKE 縮減 pool-1<br>最後在 GKE 上縮減 pool-1 數量大小 4 -&gt; 3，GKE 會將上述結點進行移除</li>
+</ol>
+
+<p>完成，做過兩遍，都符合節點遷移需求，有此經驗後下次再進行遷移比較有所概念了～</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://tksmisafu.github.io/2019/01/22/GKE-node-migration/" data-id="cjr7gmkb900018ixhzhgvaph7" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-k8s-dashboard-1" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/01/18/k8s-dashboard-1/" class="article-date">
@@ -128,10 +187,10 @@
 <li><p>opening the config-demo file, you can use the config view command.</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo view</span><br><span class="line"></span><br><span class="line"><span class="comment"># To see only the configuration information associated with the current context, use the --minify flag.</span></span><br><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo view --minify</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>Set the current context:</p>
+<li><p>Set the current-context  to <code>dev-frontend</code>:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo use-context dev-frontend</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>Change the current context to <code>dev-storage</code>:</p>
+<li><p><em>Change</em> the current context to <code>dev-storage</code>:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo use-context dev-storage</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
@@ -142,7 +201,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/18/k8s-dashboard-1/" data-id="cjr1w1b3f0001r3xhbqbulyx8" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/18/k8s-dashboard-1/" data-id="cjr7gmkbe00048ixhgnok4aer" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Dashboard/">Dashboard</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Service/">Service</a></li></ul>
@@ -310,7 +369,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/15/k8s-service-1/" data-id="cjr1w1b4n000qr3xhsyigc4pc" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/15/k8s-service-1/" data-id="cjr7gmkci000v8ixhg8tqumit" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service/">service</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
@@ -406,7 +465,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/14/centos7-install-k8s/" data-id="cjr1w1b3b0000r3xhqcm447fi" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/14/centos7-install-k8s/" data-id="cjr7gmkbi00098ixh3joffjg3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li></ul>
@@ -470,7 +529,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-2/" data-id="cjr1w1b3r0009r3xhnh260ojq" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-2/" data-id="cjr7gmkbn000e8ixh18il5ioy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CD/">CD</a></li></ul>
@@ -595,7 +654,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/" data-id="cjr1w1b3l0005r3xhnox855v2" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/03/kcd-10chapter-1/" data-id="cjr7gmkbj000a8ixhpanempmi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CD/">CD</a></li></ul>
@@ -667,7 +726,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/02/docker-0102/" data-id="cjr1w1b3l0004r3xh0syze5ox" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/02/docker-0102/" data-id="cjr7gmkbh00088ixhusl0ponz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
@@ -757,7 +816,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/26/consul/" data-id="cjr1w1b3q0008r3xhr6u6bddw" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/26/consul/" data-id="cjr7gmkbg00058ixh41xlk5qd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
@@ -817,7 +876,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/26/new-blog/" data-id="cjr1w1b3s000br3xh7uvvduqk" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/26/new-blog/" data-id="cjr7gmkbl000d8ixhq9vx2ksn" class="article-share-link">Share</a>
       
       
     </footer>
@@ -866,7 +925,7 @@ ERROR: &#39;phpize&#39; failed</code></p>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/25/hello-world/" data-id="cjr1w1b3j0003r3xhgdi0jnbm" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/25/hello-world/" data-id="cjr7gmkbc00038ixhf782usbw" class="article-share-link">Share</a>
       
       
     </footer>
@@ -921,6 +980,10 @@ ERROR: &#39;phpize&#39; failed</code></p>
       <ul>
         
           <li>
+            <a href="/2019/01/22/GKE-node-migration/">GKE node migration</a>
+          </li>
+        
+          <li>
             <a href="/2019/01/18/k8s-dashboard-1/">人生第一個 K8s Dashboard ^.^</a>
           </li>
         
@@ -934,10 +997,6 @@ ERROR: &#39;phpize&#39; failed</code></p>
         
           <li>
             <a href="/2019/01/03/kcd-10chapter-2/">CD-第十章節心得-2</a>
-          </li>
-        
-          <li>
-            <a href="/2019/01/03/kcd-10chapter-1/">CD-第十章節心得-1</a>
           </li>
         
       </ul>

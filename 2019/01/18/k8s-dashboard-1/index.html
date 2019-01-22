@@ -16,7 +16,7 @@
 <meta property="og:description" content="建置完成 K8s 環境後，總是需要有個操作介面，給予管理人員使用。官方有提供 Dashboard GUI 介面，下面紀錄安裝過程～ 起手式 deploy dashboard我是參考官網資訊頁來建置 下載 kubernetes-dashboard.yaml1$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/s">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://tksmisafu.github.io/2019/01/18/k8s-dashboard-1/new-dashboard.jpg">
-<meta property="og:updated_time" content="2019-01-18T13:35:57.610Z">
+<meta property="og:updated_time" content="2019-01-18T14:31:51.461Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="人生第一個 K8s Dashboard ^.^">
 <meta name="twitter:description" content="建置完成 K8s 環境後，總是需要有個操作介面，給予管理人員使用。官方有提供 Dashboard GUI 介面，下面紀錄安裝過程～ 起手式 deploy dashboard我是參考官網資訊頁來建置 下載 kubernetes-dashboard.yaml1$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/s">
@@ -133,10 +133,10 @@
 <li><p>opening the config-demo file, you can use the config view command.</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo view</span><br><span class="line"></span><br><span class="line"><span class="comment"># To see only the configuration information associated with the current context, use the --minify flag.</span></span><br><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo view --minify</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>Set the current context:</p>
+<li><p>Set the current-context  to <code>dev-frontend</code>:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo use-context dev-frontend</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>Change the current context to <code>dev-storage</code>:</p>
+<li><p><em>Change</em> the current context to <code>dev-storage</code>:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo use-context dev-storage</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
@@ -147,7 +147,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/18/k8s-dashboard-1/" data-id="cjr1w1b3f0001r3xhbqbulyx8" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/18/k8s-dashboard-1/" data-id="cjr7gmkbe00048ixhgnok4aer" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Dashboard/">Dashboard</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Service/">Service</a></li></ul>
@@ -157,6 +157,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2019/01/22/GKE-node-migration/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          GKE node migration
+        
+      </div>
+    </a>
   
   
     <a href="/2019/01/15/k8s-service-1/" id="article-nav-older" class="article-nav-link-wrap">
@@ -212,6 +221,10 @@
       <ul>
         
           <li>
+            <a href="/2019/01/22/GKE-node-migration/">GKE node migration</a>
+          </li>
+        
+          <li>
             <a href="/2019/01/18/k8s-dashboard-1/">人生第一個 K8s Dashboard ^.^</a>
           </li>
         
@@ -225,10 +238,6 @@
         
           <li>
             <a href="/2019/01/03/kcd-10chapter-2/">CD-第十章節心得-2</a>
-          </li>
-        
-          <li>
-            <a href="/2019/01/03/kcd-10chapter-1/">CD-第十章節心得-1</a>
           </li>
         
       </ul>
