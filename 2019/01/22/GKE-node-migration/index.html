@@ -8,6 +8,7 @@
   <title>GKE node migration | FuFu IO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="事情是這樣的～我的 GKE Lab 上初次使用 MACHINE_TYPE:g1-small，僅具有 1 cpu 資源在 Master 角色上，此規格不敷使用，故有轉移至更高規格 node 上的想法。 我參照此篇說明，去實作，文章中提到的是以整個 nodepool 為遷移範例我是僅針對單一 node 去實作。作法如下： 先讓 node 隔離kubectl cordon 此隔離動作，並不影響現有 no">
+<meta name="keywords" content="K8s,GKE">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GKE node migration">
 <meta property="og:url" content="http://tksmisafu.github.io/2019/01/22/GKE-node-migration/index.html">
@@ -15,7 +16,7 @@
 <meta property="og:description" content="事情是這樣的～我的 GKE Lab 上初次使用 MACHINE_TYPE:g1-small，僅具有 1 cpu 資源在 Master 角色上，此規格不敷使用，故有轉移至更高規格 node 上的想法。 我參照此篇說明，去實作，文章中提到的是以整個 nodepool 為遷移範例我是僅針對單一 node 去實作。作法如下： 先讓 node 隔離kubectl cordon 此隔離動作，並不影響現有 no">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://tksmisafu.github.io/2019/01/22/GKE-node-migration/pool-1-node.png">
-<meta property="og:updated_time" content="2019-01-22T07:56:33.600Z">
+<meta property="og:updated_time" content="2019-01-22T07:59:01.611Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GKE node migration">
 <meta name="twitter:description" content="事情是這樣的～我的 GKE Lab 上初次使用 MACHINE_TYPE:g1-small，僅具有 1 cpu 資源在 Master 角色上，此規格不敷使用，故有轉移至更高規格 node 上的想法。 我參照此篇說明，去實作，文章中提到的是以整個 nodepool 為遷移範例我是僅針對單一 node 去實作。作法如下： 先讓 node 隔離kubectl cordon 此隔離動作，並不影響現有 no">
@@ -117,6 +118,8 @@
       <a data-url="http://tksmisafu.github.io/2019/01/22/GKE-node-migration/" data-id="cjr7gmkb900018ixhzhgvaph7" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GKE/">GKE</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li></ul>
+
     </footer>
   </div>
   
@@ -145,7 +148,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dashboard/">Dashboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Service/">Service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dashboard/">Dashboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GKE/">GKE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Service/">Service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
     </div>
   </div>
 
@@ -155,7 +158,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/CD/" style="font-size: 15px;">CD</a> <a href="/tags/Dashboard/" style="font-size: 10px;">Dashboard</a> <a href="/tags/K8s/" style="font-size: 20px;">K8s</a> <a href="/tags/Service/" style="font-size: 10px;">Service</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/service-discovery/" style="font-size: 15px;">service_discovery</a>
+      <a href="/tags/CD/" style="font-size: 15px;">CD</a> <a href="/tags/Dashboard/" style="font-size: 10px;">Dashboard</a> <a href="/tags/GKE/" style="font-size: 10px;">GKE</a> <a href="/tags/K8s/" style="font-size: 20px;">K8s</a> <a href="/tags/Service/" style="font-size: 10px;">Service</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/service-discovery/" style="font-size: 15px;">service_discovery</a>
     </div>
   </div>
 
