@@ -16,7 +16,7 @@
 <meta property="og:description" content="事情是這樣的～我的 GKE Lab 上初次使用 MACHINE_TYPE:g1-small，僅具有 1 cpu 資源在 Master 角色上，此規格不敷使用，故有轉移至更高規格 node 上的想法。 我參照此篇說明，去實作，文章中提到的是以整個 nodepool 為遷移範例我是僅針對單一 node 去實作。作法如下： 先讓 node 隔離kubectl cordon 此隔離動作，並不影響現有 no">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://tksmisafu.github.io/2019/01/22/GKE-node-migration/pool-1-node.png">
-<meta property="og:updated_time" content="2019-01-22T08:01:22.353Z">
+<meta property="og:updated_time" content="2019-01-22T08:09:50.193Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GKE node migration">
 <meta name="twitter:description" content="事情是這樣的～我的 GKE Lab 上初次使用 MACHINE_TYPE:g1-small，僅具有 1 cpu 資源在 Master 角色上，此規格不敷使用，故有轉移至更高規格 node 上的想法。 我參照此篇說明，去實作，文章中提到的是以整個 nodepool 為遷移範例我是僅針對單一 node 去實作。作法如下： 先讓 node 隔離kubectl cordon 此隔離動作，並不影響現有 no">
@@ -111,6 +111,7 @@
 <h1 id="最後在-GKE-縮減-pool-1"><a href="#最後在-GKE-縮減-pool-1" class="headerlink" title="最後在 GKE 縮減 pool-1"></a>最後在 GKE 縮減 pool-1</h1><p>最後在 GKE 上縮減 pool-1 數量大小 4 -&gt; 3，GKE 會將上述結點進行移除</p>
 <img src="/2019/01/22/GKE-node-migration/pool-1-node.png" title="[縮減後狀態]">
 <p>完成，做過兩遍，都符合節點遷移需求，有此經驗後下次再進行遷移比較有所概念了～</p>
+<p>參考官方<a href="https://cloud.google.com/kubernetes-engine/docs/tutorials/migrating-node-pool" target="_blank" rel="noopener">文件說明頁</a><br>參考<a href="https://kelvinji2009.github.io/blog/k8s-best-practice-s01e07/" target="_blank" rel="noopener">網友解說</a></p>
 
       
     </div>
