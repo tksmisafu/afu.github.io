@@ -14,10 +14,12 @@
 <meta property="og:site_name" content="FuFu IO">
 <meta property="og:description" content="事情是這樣的～我的 GKE Lab 上初次使用 MACHINE_TYPE:g1-small，僅具有 1 cpu 資源在 Master 角色上，此規格不敷使用，故有轉移至更高規格 node 上的想法。 我參照此篇說明，去實作，文章中提到的是以整個 nodepool 為遷移範例我是僅針對單一 node 去實作。作法如下： 先讓 node 隔離kubectl cordon 此隔離動作，並不影響現有 no">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-01-22T07:50:22.062Z">
+<meta property="og:image" content="http://tksmisafu.github.io/2019/01/22/GKE-node-migration/pool-1-node.png">
+<meta property="og:updated_time" content="2019-01-22T07:54:01.822Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GKE node migration">
 <meta name="twitter:description" content="事情是這樣的～我的 GKE Lab 上初次使用 MACHINE_TYPE:g1-small，僅具有 1 cpu 資源在 Master 角色上，此規格不敷使用，故有轉移至更高規格 node 上的想法。 我參照此篇說明，去實作，文章中提到的是以整個 nodepool 為遷移範例我是僅針對單一 node 去實作。作法如下： 先讓 node 隔離kubectl cordon 此隔離動作，並不影響現有 no">
+<meta name="twitter:image" content="http://tksmisafu.github.io/2019/01/22/GKE-node-migration/pool-1-node.png">
   
     <link rel="alternate" href="/atom.xml" title="FuFu IO" type="application/atom+xml">
   
@@ -107,7 +109,7 @@
 <ol start="4">
 <li>最後在 GKE 縮減 pool-1<br>最後在 GKE 上縮減 pool-1 數量大小 4 -&gt; 3，GKE 會將上述結點進行移除</li>
 </ol>
-
+<img src="/2019/01/22/GKE-node-migration/pool-1-node.png" title="[縮減後狀態]">
 <p>完成，做過兩遍，都符合節點遷移需求，有此經驗後下次再進行遷移比較有所概念了～</p>
 
       
