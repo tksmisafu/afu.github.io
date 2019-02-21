@@ -62,6 +62,96 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-consul" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/26/consul/" class="article-date">
+  <time datetime="2018-12-26T13:15:56.000Z" itemprop="datePublished">2018-12-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/26/consul/">consul</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">[文章目录]</strong>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#搭建-Consul-server-mode"><span class="toc-text">搭建 Consul server mode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#搭建-Consul-client-mode"><span class="toc-text">搭建 Consul client mode</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#模擬-Linux-node-環境，進行-Member-join-與-Health-Checks"><span class="toc-text">模擬 Linux node 環境，進行 Member join 與 Health Checks</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#啟用-Consul-agent-client-mode"><span class="toc-text">啟用 Consul agent client mode</span></a></li></ol></li></ol></li></ol>
+        </div>
+        <p>今日首搭 Consul 服務環境，以下簡單扼要做紀錄<br>環境說明：</p>
+<ul>
+<li>Consul server mode: <code>Ubuntu 18.04</code> <code>192.168.42.12</code></li>
+<li>Consul client mode: <code>Vagrant CentOS 7</code> <code>192.168.42.199</code></li>
+</ul>
+<h2 id="搭建-Consul-server-mode"><a href="#搭建-Consul-server-mode" class="headerlink" title="搭建 Consul server mode"></a>搭建 Consul server mode</h2><p>在 Docker 環境中，建立 Docker-composer file<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">version: <span class="string">'3'</span></span><br><span class="line">services:</span><br><span class="line">  Consul:</span><br><span class="line">    image: <span class="string">"consul"</span></span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"8300-8302:8300-8302"</span></span><br><span class="line">      - <span class="string">"8500:8500"</span></span><br><span class="line">      - <span class="string">"8600:8600"</span></span><br><span class="line">      - <span class="string">"8301-8302:8301-8302/udp"</span></span><br><span class="line">      - <span class="string">"8600:8600/udp"</span></span><br><span class="line">    volumes:</span><br><span class="line">      - /etc/consul.d:/consul/config</span><br></pre></td></tr></table></figure></p>
+<p>設定配置檔案 server.json<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"datacenter"</span>: <span class="string">"Office-Lab"</span>,</span><br><span class="line">  <span class="attr">"data_dir"</span>: <span class="string">"/consul/data"</span>,</span><br><span class="line">  <span class="attr">"bootstrap_expect"</span>: <span class="number">1</span>,</span><br><span class="line">  <span class="attr">"log_level"</span>: <span class="string">"INFO"</span>,</span><br><span class="line">  <span class="attr">"node_name"</span>: <span class="string">"Afu-Lab2"</span>,</span><br><span class="line">  <span class="attr">"server"</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">"bind_addr"</span>: <span class="string">"0.0.0.0"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>啟動 consul 服務<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker-compose -f consul-docker-compose.yml up -d</span><br></pre></td></tr></table></figure></p>
+<p>查看 Consul Web 介面 <a href="http://server-ip:8500" target="_blank" rel="noopener">http://server-ip:8500</a></p>
+<p><strong>啟動 server mode 遇到問題，記錄如下：</strong></p>
+<ul>
+<li>server agent log 顯示：<br><code>[ERR] agent: failed to sync remote state: No cluster leader</code><ul>
+<li>原因：這是環境中第一台 Consul server node，需要藉由 <code>-bootstrap-expect=1</code> 作為初始引導方式。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>server agent log 顯示：<br><code>Client Addr: [127.0.0.1] (HTTP: 8500, HTTPS: -1, gRPC: -1, DNS: 8600)</code><br><code>Cluster Addr: 192.168.42.12 (LAN: 8301, WAN: 8302)</code><ul>
+<li>原因：agent 預設服務綁定於 <code>localhost</code> 介面上，故需要運用參數 <code>-client=0.0.0.0</code> 進行調整。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>server agent log 顯示：<br><code>[ERR] memberlist: Failed push/pull merge: Member &#39;C7-java&#39; part of wrong datacenter &#39;dc1&#39; from=192.168.42.199:49356</code><ul>
+<li>原因：這顯示 <code>Member &#39;C7-java&#39;</code> 啟動時，採用預設參數 <code>datacenter &#39;dc1&#39;</code> ，只需在 member 端啟用時新增參數 <code>-datacenter=office-lab</code> 即可。</li>
+</ul>
+</li>
+</ul>
+<p><strong>備註：</strong><br>如果不選擇 Docker 啟用 Consul server 服務，可以試試指令啟用，方式如下<br>啟用 Consul agent server<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo consul agent -server -bootstrap-expect=1 -node=Afu-Lab2 -<span class="built_in">enable</span>-local-script-checks=<span class="literal">true</span> -config-dir=/etc/consul.d -data-dir=/tmp/consul -<span class="built_in">bind</span>=0.0.0.0 -client=0.0.0.0</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h2 id="搭建-Consul-client-mode"><a href="#搭建-Consul-client-mode" class="headerlink" title="搭建 Consul client mode"></a>搭建 Consul client mode</h2><p>在 CentOS 7 環境下，<a href="https://www.consul.io/downloads.html" target="_blank" rel="noopener">下載官方</a> Binary file<br>解壓縮後，移至 <code>/usr/bin</code> 目錄下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://releases.hashicorp.com/consul/1.4.0/consul_1.4.0_linux_amd64.zip</span><br><span class="line">unzip consul_1.4.0_linux_amd64.zip</span><br><span class="line">sudo mv consul /usr/bin/</span><br></pre></td></tr></table></figure>
+<p>驗證執行<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ consul -v</span><br><span class="line">Consul v1.4.0</span><br><span class="line">Protocol 2 spoken by default, understands 2 to 3 (agent will automatically use protocol &gt;2 when speaking to compatible agents)</span><br></pre></td></tr></table></figure></p>
+<p>參考網址：<br><a href="https://www.consul.io/docs/install/index.html#precompiled-binaries" target="_blank" rel="noopener">https://www.consul.io/docs/install/index.html#precompiled-binaries</a></p>
+<h3 id="模擬-Linux-node-環境，進行-Member-join-與-Health-Checks"><a href="#模擬-Linux-node-環境，進行-Member-join-與-Health-Checks" class="headerlink" title="模擬 Linux node 環境，進行 Member join 與 Health Checks"></a>模擬 Linux node 環境，進行 Member join 與 Health Checks</h3><p>準備設定檔案</p>
+<p>ssh.json<br><a href="https://www.consul.io/docs/agent/checks.html" target="_blank" rel="noopener">官網說明</a></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 定義 SSH TCP check</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"check"</span>: &#123;</span><br><span class="line">    <span class="attr">"id"</span>: <span class="string">"ssh"</span>,</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"SSH TCP on port 22"</span>,</span><br><span class="line">    <span class="attr">"tcp"</span>: <span class="string">"localhost:22"</span>,</span><br><span class="line">    <span class="attr">"interval"</span>: <span class="string">"10s"</span>,</span><br><span class="line">    <span class="attr">"timeout"</span>: <span class="string">"1s"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>啟用 Consul agent <a href="https://learn.hashicorp.com/consul/getting-started/join#starting-the-agents" target="_blank" rel="noopener">官方教學網址</a></p>
+<h4 id="啟用-Consul-agent-client-mode"><a href="#啟用-Consul-agent-client-mode" class="headerlink" title="啟用 Consul agent client mode"></a>啟用 Consul agent client mode</h4><p>啟用指令：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">consul agent -client=0.0.0.0 -node=C7-java \</span><br><span class="line">  -join=192.168.42.12 -<span class="built_in">bind</span>=192.168.42.199 \</span><br><span class="line">  -<span class="built_in">enable</span>-local-script-checks=<span class="literal">true</span> -data-dir=/tmp/consul \</span><br><span class="line">  -config-dir=/etc/consul.d -datacenter=office-lab</span><br></pre></td></tr></table></figure></p>
+<p>啟用後，會有三個新 Listen port：<code>8301、8500、8600</code></p>
+<p>在查看一次 Consul Web 介面 <code>http://server-ip:8500</code>，即可發現 <code>Nodes、Health Checks</code> 的變化。</p>
+<ul>
+<li>Client agent log 顯示：<br><code>Multiple private IPv4 addresses found. Please configure one with &#39;bind&#39; and/or &#39;advertise&#39;.</code><ul>
+<li>原因：這是因為 node 網路具備兩個以上的網路IP，故必須配置其中一個網卡 IP。</li>
+</ul>
+</li>
+</ul>
+<p><strong>備註：</strong><br>以上相關配置參數，可參考<a href="https://www.consul.io/docs/agent/options.html" target="_blank" rel="noopener">官網說明</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://tksmisafu.github.io/2018/12/26/consul/" data-id="cjsdylngh000bj7xhdp2m363z" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-new-blog" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/12/26/new-blog/" class="article-date">
@@ -110,7 +200,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/26/new-blog/" data-id="cjr90vhc4000aewxhmgphe81e" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/26/new-blog/" data-id="cjsdylngv000lj7xhpqanjh7b" class="article-share-link">Share</a>
       
       
     </footer>
@@ -159,7 +249,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2018/12/25/hello-world/" data-id="cjr90vhbw0003ewxhzvofst3v" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2018/12/25/hello-world/" data-id="cjsdylngn000dj7xhorcwlxfx" class="article-share-link">Share</a>
       
       
     </footer>
@@ -187,7 +277,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dashboard/">Dashboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GKE/">GKE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Helm/">Helm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Monitor/">Monitor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Prometheus/">Prometheus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Service/">Service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcloud/">gcloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dashboard/">Dashboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GKE/">GKE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Helm/">Helm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Monitor/">Monitor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Prometheus/">Prometheus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Service/">Service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/consul/">consul</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcloud/">gcloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
     </div>
   </div>
 
@@ -197,7 +287,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/CD/" style="font-size: 15px;">CD</a> <a href="/tags/Dashboard/" style="font-size: 10px;">Dashboard</a> <a href="/tags/GKE/" style="font-size: 15px;">GKE</a> <a href="/tags/Helm/" style="font-size: 10px;">Helm</a> <a href="/tags/K8s/" style="font-size: 20px;">K8s</a> <a href="/tags/Monitor/" style="font-size: 10px;">Monitor</a> <a href="/tags/Prometheus/" style="font-size: 10px;">Prometheus</a> <a href="/tags/Service/" style="font-size: 10px;">Service</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/gcloud/" style="font-size: 10px;">gcloud</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/service-discovery/" style="font-size: 15px;">service_discovery</a>
+      <a href="/tags/CD/" style="font-size: 15px;">CD</a> <a href="/tags/Dashboard/" style="font-size: 10px;">Dashboard</a> <a href="/tags/GKE/" style="font-size: 15px;">GKE</a> <a href="/tags/Helm/" style="font-size: 15px;">Helm</a> <a href="/tags/K8s/" style="font-size: 20px;">K8s</a> <a href="/tags/Monitor/" style="font-size: 10px;">Monitor</a> <a href="/tags/Prometheus/" style="font-size: 10px;">Prometheus</a> <a href="/tags/Service/" style="font-size: 10px;">Service</a> <a href="/tags/consul/" style="font-size: 10px;">consul</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/gcloud/" style="font-size: 10px;">gcloud</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/service-discovery/" style="font-size: 15px;">service_discovery</a>
     </div>
   </div>
 
@@ -206,7 +296,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li></ul>
     </div>
   </div>
 
@@ -217,6 +307,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/02/21/Use-helm-publish-K8SServices/">使用 HELM 來發布服務</a>
+          </li>
         
           <li>
             <a href="/2019/01/23/k8s-monitoring-1/">K8s 監控初體驗</a>
@@ -232,10 +326,6 @@
         
           <li>
             <a href="/2019/01/18/k8s-dashboard-1/">人生第一個 K8s Dashboard ^.^</a>
-          </li>
-        
-          <li>
-            <a href="/2019/01/15/k8s-service-1/">K8s Service 介紹</a>
           </li>
         
       </ul>

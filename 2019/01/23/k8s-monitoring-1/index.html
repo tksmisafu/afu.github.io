@@ -8,7 +8,7 @@
   <title>K8s 監控初體驗 | FuFu IO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="概述CoreOS 有個開放源碼的 Prometheus Operator 專案，是為了”方便管理”監控系統 Prometheus 於 K8s 叢集環境上運作而生。官方標題：The Prometheus Operator creates, configures, and manages Prometheus monitoring instances.專案相關細節可以參考官方說明頁。以下透過 Helm">
-<meta name="keywords" content="K8s,Prometheus,Monitor,Helm">
+<meta name="keywords" content="K8s,Helm,Prometheus,Monitor">
 <meta property="og:type" content="article">
 <meta property="og:title" content="K8s 監控初體驗">
 <meta property="og:url" content="http://tksmisafu.github.io/2019/01/23/k8s-monitoring-1/index.html">
@@ -129,7 +129,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://tksmisafu.github.io/2019/01/23/k8s-monitoring-1/" data-id="cjr90vhde000wewxh0uygixhr" class="article-share-link">Share</a>
+      <a data-url="http://tksmisafu.github.io/2019/01/23/k8s-monitoring-1/" data-id="cjsdylnh50014j7xhhbh9k474" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Helm/">Helm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/K8s/">K8s</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Monitor/">Monitor</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Prometheus/">Prometheus</a></li></ul>
@@ -139,6 +139,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2019/02/21/Use-helm-publish-K8SServices/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          使用 HELM 來發布服務
+        
+      </div>
+    </a>
   
   
     <a href="/2019/01/22/Gcloud-SDK-Note/" id="article-nav-older" class="article-nav-link-wrap">
@@ -162,7 +171,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dashboard/">Dashboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GKE/">GKE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Helm/">Helm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Monitor/">Monitor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Prometheus/">Prometheus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Service/">Service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcloud/">gcloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dashboard/">Dashboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GKE/">GKE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Helm/">Helm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Monitor/">Monitor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Prometheus/">Prometheus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Service/">Service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/consul/">consul</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcloud/">gcloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
     </div>
   </div>
 
@@ -172,7 +181,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/CD/" style="font-size: 15px;">CD</a> <a href="/tags/Dashboard/" style="font-size: 10px;">Dashboard</a> <a href="/tags/GKE/" style="font-size: 15px;">GKE</a> <a href="/tags/Helm/" style="font-size: 10px;">Helm</a> <a href="/tags/K8s/" style="font-size: 20px;">K8s</a> <a href="/tags/Monitor/" style="font-size: 10px;">Monitor</a> <a href="/tags/Prometheus/" style="font-size: 10px;">Prometheus</a> <a href="/tags/Service/" style="font-size: 10px;">Service</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/gcloud/" style="font-size: 10px;">gcloud</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/service-discovery/" style="font-size: 15px;">service_discovery</a>
+      <a href="/tags/CD/" style="font-size: 15px;">CD</a> <a href="/tags/Dashboard/" style="font-size: 10px;">Dashboard</a> <a href="/tags/GKE/" style="font-size: 15px;">GKE</a> <a href="/tags/Helm/" style="font-size: 15px;">Helm</a> <a href="/tags/K8s/" style="font-size: 20px;">K8s</a> <a href="/tags/Monitor/" style="font-size: 10px;">Monitor</a> <a href="/tags/Prometheus/" style="font-size: 10px;">Prometheus</a> <a href="/tags/Service/" style="font-size: 10px;">Service</a> <a href="/tags/consul/" style="font-size: 10px;">consul</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/gcloud/" style="font-size: 10px;">gcloud</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/service-discovery/" style="font-size: 15px;">service_discovery</a>
     </div>
   </div>
 
@@ -181,7 +190,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li></ul>
     </div>
   </div>
 
@@ -192,6 +201,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/02/21/Use-helm-publish-K8SServices/">使用 HELM 來發布服務</a>
+          </li>
         
           <li>
             <a href="/2019/01/23/k8s-monitoring-1/">K8s 監控初體驗</a>
@@ -207,10 +220,6 @@
         
           <li>
             <a href="/2019/01/18/k8s-dashboard-1/">人生第一個 K8s Dashboard ^.^</a>
-          </li>
-        
-          <li>
-            <a href="/2019/01/15/k8s-service-1/">K8s Service 介紹</a>
           </li>
         
       </ul>

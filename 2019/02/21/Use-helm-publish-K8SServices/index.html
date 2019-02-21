@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>使用 HELM 來發布服務 | FuFu IO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="安裝 HELM macOS 系統：brew install kubernetes-helm  Linux 系統：from script$ sudo curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash   安裝 Tiller 也就是 HELM Server role 建立 RBAC for helm$">
+<meta name="keywords" content="Helm,consul">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 HELM 來發布服務">
+<meta property="og:url" content="http://tksmisafu.github.io/2019/02/21/Use-helm-publish-K8SServices/index.html">
+<meta property="og:site_name" content="FuFu IO">
+<meta property="og:description" content="安裝 HELM macOS 系統：brew install kubernetes-helm  Linux 系統：from script$ sudo curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash   安裝 Tiller 也就是 HELM Server role 建立 RBAC for helm$">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-02-21T01:39:23.478Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 HELM 來發布服務">
+<meta name="twitter:description" content="安裝 HELM macOS 系統：brew install kubernetes-helm  Linux 系統：from script$ sudo curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash   安裝 Tiller 也就是 HELM Server role 建立 RBAC for helm$">
+  
+    <link rel="alternate" href="/atom.xml" title="FuFu IO" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">FuFu IO</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://tksmisafu.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Use-helm-publish-K8SServices" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/02/21/Use-helm-publish-K8SServices/" class="article-date">
+  <time datetime="2019-02-21T01:39:23.000Z" itemprop="datePublished">2019-02-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用 HELM 來發布服務
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <div id="toc" class="toc-article">
+          <strong class="toc-title">[文章目录]</strong>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#安裝-HELM"><span class="toc-text">安裝 HELM</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#安裝-Tiller-也就是-HELM-Server-role"><span class="toc-text">安裝 Tiller 也就是 HELM Server role</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#錯誤紀錄"><span class="toc-text">錯誤紀錄</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#如沒建立-HELM-RBAC-情況下進行-helm-init"><span class="toc-text">如沒建立 HELM RBAC 情況下進行 helm init</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#initialize-Helm-on-both-client-and-server"><span class="toc-text">initialize Helm on both client and server</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GCP-Insufficient-CPU"><span class="toc-text">GCP Insufficient CPU</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#觀察-Tiller"><span class="toc-text">觀察 Tiller</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HELM-安裝範例：Consul-service"><span class="toc-text">HELM 安裝範例：Consul service</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#安裝-helm-線上-stable-consul-服務範例"><span class="toc-text">安裝 helm 線上 stable/consul 服務範例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#在-GKE-上發布-Consul-UI-服務"><span class="toc-text">在 GKE 上發布 Consul-UI 服務</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#於-HELM-Chart-中新增參數-loadBalancerSourceRanges"><span class="toc-text">於 HELM Chart 中新增參數 loadBalancerSourceRanges</span></a></li></ol></li></ol>
+        </div>
+        <h1 id="安裝-HELM"><a href="#安裝-HELM" class="headerlink" title="安裝 HELM"></a>安裝 HELM</h1><ul>
+<li><p>macOS 系統：<br><code>brew install kubernetes-helm</code></p>
+</li>
+<li><p>Linux 系統：from script<br><code>$ sudo curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash</code></p>
+</li>
+</ul>
+<h1 id="安裝-Tiller-也就是-HELM-Server-role"><a href="#安裝-Tiller-也就是-HELM-Server-role" class="headerlink" title="安裝 Tiller 也就是 HELM Server role"></a>安裝 Tiller 也就是 HELM Server role</h1><ul>
+<li><p>建立 RBAC for helm<br>$ vi helm-rbac-config.yaml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">tiller</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">tiller</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line"><span class="attr">  apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="attr">  kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">cluster-admin</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line"><span class="attr">  - kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">tiller</span></span><br><span class="line"><span class="attr">    namespace:</span> <span class="string">kube-system</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>套用 RBAC</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kc apply -f helm-rbac-config.yaml</span><br><span class="line">serviceaccount/tiller created</span><br><span class="line">clusterrolebinding.rbac.authorization.k8s.io/tiller created</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>進行初始化 helm init</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ helm init --service-account tiller</span><br><span class="line">Creating /Users/afu/.helm</span><br><span class="line">Creating /Users/afu/.helm/repository</span><br><span class="line">Creating /Users/afu/.helm/repository/cache</span><br><span class="line">Creating /Users/afu/.helm/repository/<span class="built_in">local</span></span><br><span class="line">Creating /Users/afu/.helm/plugins</span><br><span class="line">Creating /Users/afu/.helm/starters</span><br><span class="line">Creating /Users/afu/.helm/cache/archive</span><br><span class="line">Creating /Users/afu/.helm/repository/repositories.yaml</span><br><span class="line">Adding stable repo with URL: https://kubernetes-charts.storage.googleapis.com</span><br><span class="line">Adding <span class="built_in">local</span> repo with URL: http://127.0.0.1:8879/charts</span><br><span class="line"><span class="variable">$HELM_HOME</span> has been configured at /Users/afu/.helm.</span><br><span class="line"></span><br><span class="line">Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.</span><br><span class="line"></span><br><span class="line">Please note: by default, Tiller is deployed with an insecure <span class="string">'allow unauthenticated users'</span> policy.</span><br><span class="line">To prevent this, run `helm init` with the --tiller-tls-verify flag.</span><br><span class="line">For more information on securing your installation see: https://docs.helm.sh/using_helm/<span class="comment">#securing-your-helm-installation</span></span><br><span class="line">Happy Helming!</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如需更新 Tille pod<br><code>helm init --service-account tiller --upgrade</code></p>
+</li>
+</ul>
+<h1 id="錯誤紀錄"><a href="#錯誤紀錄" class="headerlink" title="錯誤紀錄"></a>錯誤紀錄</h1><h2 id="如沒建立-HELM-RBAC-情況下進行-helm-init"><a href="#如沒建立-HELM-RBAC-情況下進行-helm-init" class="headerlink" title="如沒建立 HELM RBAC 情況下進行 helm init"></a>如沒建立 HELM RBAC 情況下進行 helm init</h2><p>下列回饋～請管理者給予適合的權限政策<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ helm init</span><br><span class="line"><span class="variable">$HELM_HOME</span> has been configured at /home/afu/.helm.</span><br><span class="line"></span><br><span class="line">Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.</span><br><span class="line"></span><br><span class="line">Please note: by default, Tiller is deployed with an insecure <span class="string">'allow unauthenticated users'</span> policy.</span><br><span class="line">To prevent this, run `helm init` with the --tiller-tls-verify flag.</span><br><span class="line">For more information on securing your installation see: https://docs.helm.sh/using_helm/<span class="comment">#securing-your-helm-installation</span></span><br><span class="line">Happy Helming!</span><br></pre></td></tr></table></figure></p>
+<h2 id="initialize-Helm-on-both-client-and-server"><a href="#initialize-Helm-on-both-client-and-server" class="headerlink" title="initialize Helm on both client and server"></a>initialize Helm on both client and server</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ helm list</span><br><span class="line">Error: configmaps is forbidden: User <span class="string">"system:serviceaccount:kube-system:default"</span> cannot list resource <span class="string">"configmaps"</span> <span class="keyword">in</span> API group <span class="string">""</span> <span class="keyword">in</span> the namespace <span class="string">"kube-system"</span></span><br></pre></td></tr></table></figure>
+<p>出現此錯誤，起因是 Tiller 在 K8s 環境內權限不足<br>需要額外設定 ServiceAccount ，參考下列官方說明文件</p>
+<ul>
+<li><a href="https://docs.helm.sh/using_helm/#securing-your-helm-installation" target="_blank" rel="noopener">官方說明頁-Securing your Helm Installation</a></li>
+<li><a href="https://docs.helm.sh/using_helm/#tiller-and-role-based-access-control" target="_blank" rel="noopener">官方說明頁-Tiller and RBAC</a></li>
+</ul>
+<h2 id="GCP-Insufficient-CPU"><a href="#GCP-Insufficient-CPU" class="headerlink" title="GCP Insufficient CPU"></a>GCP Insufficient CPU</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Consul 部署後，查看狀態</span></span><br><span class="line">$ kc get pod</span><br><span class="line">NAME              READY   STATUS    RESTARTS   AGE</span><br><span class="line">consul-qpp4r      0/1     Pending   0          0s</span><br><span class="line">consul-server-0   0/1     Pending   0          1m</span><br><span class="line">consul-server-1   0/1     Pending   0          1m</span><br><span class="line">consul-server-2   0/1     Pending   0          1m</span><br><span class="line"></span><br><span class="line"><span class="comment"># 從 GKE 主控台查詢 consul-server-0 事件</span></span><br><span class="line"><span class="comment"># Stateful Set： consul-server:</span></span><br><span class="line">0/1 nodes are available: 1 Insufficient cpu.</span><br></pre></td></tr></table></figure>
+<p>原因：目前 GKE node 關於 CPU 資源不足，需要調整 node 資源。</p>
+<p>～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～</p>
+<h2 id="觀察-Tiller"><a href="#觀察-Tiller" class="headerlink" title="觀察 Tiller"></a>觀察 Tiller</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ helm list</span><br><span class="line"></span><br><span class="line">$ kc get -n kube-system pod -l app=helm</span><br><span class="line">NAME                             READY   STATUS    RESTARTS   AGE</span><br><span class="line">tiller-deploy-6f8d4f6c9c-tj8dd   1/1     Running   0          3m23s</span><br><span class="line"></span><br><span class="line">$ kc logs -n kube-system tiller-deploy-6f8d4f6c9c-tj8dd</span><br><span class="line">[main] 2019/01/19 06:13:00 Starting Tiller v2.12.1 (tls=<span class="literal">false</span>)</span><br><span class="line">[main] 2019/01/19 06:13:00 GRPC listening on :44134</span><br><span class="line">[main] 2019/01/19 06:13:00 Probes listening on :44135</span><br><span class="line">[main] 2019/01/19 06:13:00 Storage driver is ConfigMap</span><br><span class="line">[main] 2019/01/19 06:13:00 Max <span class="built_in">history</span> per release is 0</span><br></pre></td></tr></table></figure>
+<h1 id="HELM-安裝範例：Consul-service"><a href="#HELM-安裝範例：Consul-service" class="headerlink" title="HELM 安裝範例：Consul service"></a>HELM 安裝範例：Consul service</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Clone the chart repo</span></span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/hashicorp/consul-helm.git</span><br><span class="line">$ <span class="built_in">cd</span> consul-helm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 檢查 Consul version tag</span></span><br><span class="line">$ git <span class="built_in">log</span></span><br><span class="line">$ git tag</span><br><span class="line"></span><br><span class="line"><span class="comment"># Run Helm</span></span><br><span class="line">$ helm install --dry-run ./</span><br><span class="line">$ helm install --name consul ./</span><br><span class="line">NAME:   consul</span><br><span class="line">LAST DEPLOYED: Sat Jan 19 17:36:07 2019</span><br><span class="line">NAMESPACE: default</span><br><span class="line">STATUS: DEPLOYED</span><br><span class="line"></span><br><span class="line">RESOURCES:</span><br><span class="line">==&gt; v1/Service</span><br><span class="line">NAME           TYPE       CLUSTER-IP      EXTERNAL-IP  PORT(S)                                                                  AGE</span><br><span class="line">consul-dns     ClusterIP  10.106.118.143  &lt;none&gt;       53/TCP,53/UDP                                                            1s</span><br><span class="line">consul-server  ClusterIP  None            &lt;none&gt;       8500/TCP,8301/TCP,8301/UDP,8302/TCP,8302/UDP,8300/TCP,8600/TCP,8600/UDP  1s</span><br><span class="line">consul-ui      ClusterIP  10.96.148.23    &lt;none&gt;       80/TCP                                                                   0s</span><br><span class="line"></span><br><span class="line">==&gt; v1/DaemonSet</span><br><span class="line">NAME    DESIRED  CURRENT  READY  UP-TO-DATE  AVAILABLE  NODE SELECTOR  AGE</span><br><span class="line">consul  3        3        0      3           0          &lt;none&gt;         0s</span><br><span class="line"></span><br><span class="line">==&gt; v1/StatefulSet</span><br><span class="line">NAME           DESIRED  CURRENT  AGE</span><br><span class="line">consul-server  3        3        0s</span><br><span class="line"></span><br><span class="line">==&gt; v1/Pod(related)</span><br><span class="line">NAME             READY  STATUS             RESTARTS  AGE</span><br><span class="line">consul-dnlpp     0/1    ContainerCreating  0         0s</span><br><span class="line">consul-fwvvs     0/1    ContainerCreating  0         0s</span><br><span class="line">consul-hscvv     0/1    ContainerCreating  0         0s</span><br><span class="line">consul-server-0  0/1    Pending            0         0s</span><br><span class="line">consul-server-1  0/1    Pending            0         0s</span><br><span class="line">consul-server-2  0/1    Pending            0         0s</span><br><span class="line"></span><br><span class="line">==&gt; v1beta1/PodDisruptionBudget</span><br><span class="line">NAME           MIN AVAILABLE  MAX UNAVAILABLE  ALLOWED DISRUPTIONS  AGE</span><br><span class="line">consul-server  N/A            1                0                    1s</span><br><span class="line"></span><br><span class="line">==&gt; v1/ConfigMap</span><br><span class="line">NAME                  DATA  AGE</span><br><span class="line">consul-client-config  1     1s</span><br><span class="line">consul-server-config  1     1s</span><br></pre></td></tr></table></figure>
+<hr>
+<p>刪除 release<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ helm delete --dry-run consul</span><br><span class="line">release <span class="string">"consul"</span> deleted</span><br><span class="line">$ helm ls --all consul</span><br><span class="line">NAME  	REVISION	UPDATED                 	STATUS 	CHART       	APP VERSION	NAMESPACE</span><br><span class="line">consul	1       	Sat Jan 19 17:36:07 2019	DELETED	consul-0.5.0	           	default</span><br><span class="line">$ helm del --purge consul</span><br><span class="line">release <span class="string">"consul"</span> deleted</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h2 id="安裝-helm-線上-stable-consul-服務範例"><a href="#安裝-helm-線上-stable-consul-服務範例" class="headerlink" title="安裝 helm 線上 stable/consul 服務範例"></a>安裝 helm 線上 stable/consul 服務範例</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">helm install stable/consul</span><br><span class="line">NAME:   youthful-stoat</span><br><span class="line">LAST DEPLOYED: Sat Jan 19 18:07:33 2019</span><br><span class="line">NAMESPACE: default</span><br><span class="line">STATUS: DEPLOYED</span><br><span class="line"></span><br><span class="line">RESOURCES:</span><br><span class="line">==&gt; v1/ConfigMap</span><br><span class="line">NAME                         DATA  AGE</span><br><span class="line">youthful-stoat-consul-tests  1     0s</span><br><span class="line"></span><br><span class="line">==&gt; v1/Service</span><br><span class="line">NAME                      TYPE       CLUSTER-IP     EXTERNAL-IP  PORT(S)                                                                           AGE</span><br><span class="line">youthful-stoat-consul     ClusterIP  None           &lt;none&gt;       8500/TCP,8400/TCP,8301/TCP,8301/UDP,8302/TCP,8302/UDP,8300/TCP,8600/TCP,8600/UDP  0s</span><br><span class="line">youthful-stoat-consul-ui  NodePort   10.103.14.242  &lt;none&gt;       8500:30481/TCP                                                                    0s</span><br><span class="line"></span><br><span class="line">==&gt; v1beta1/StatefulSet</span><br><span class="line">NAME                   DESIRED  CURRENT  AGE</span><br><span class="line">youthful-stoat-consul  3        1        0s</span><br><span class="line"></span><br><span class="line">==&gt; v1/Pod(related)</span><br><span class="line">NAME                     READY  STATUS   RESTARTS  AGE</span><br><span class="line">youthful-stoat-consul-0  0/1    Pending  0         0s</span><br><span class="line"></span><br><span class="line">==&gt; v1beta1/PodDisruptionBudget</span><br><span class="line">NAME                       MIN AVAILABLE  MAX UNAVAILABLE  ALLOWED DISRUPTIONS  AGE</span><br><span class="line">youthful-stoat-consul-pdb  N/A            1                0                    0s</span><br><span class="line"></span><br><span class="line">==&gt; v1/Secret</span><br><span class="line">NAME                              TYPE    DATA  AGE</span><br><span class="line">youthful-stoat-consul-gossip-key  Opaque  1     0s</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">NOTES:</span><br><span class="line">1. Watch all cluster members come up.</span><br><span class="line">  $ kubectl get pods --namespace=default -w</span><br><span class="line">2. Test cluster health using Helm <span class="built_in">test</span>.</span><br><span class="line">  $ helm <span class="built_in">test</span> youthful-stoat-consul</span><br><span class="line">3. (Optional) Manually confirm consul cluster is healthy.</span><br><span class="line">  $ CONSUL_POD=$(kubectl get pods -l=<span class="string">'release=youthful-stoat-consul'</span> --output=jsonpath=&#123;.items[0].metadata.name&#125;)</span><br><span class="line">  $ kubectl <span class="built_in">exec</span> <span class="variable">$CONSUL_POD</span> consul members --namespace=default | grep server</span><br></pre></td></tr></table></figure>
+<h2 id="在-GKE-上發布-Consul-UI-服務"><a href="#在-GKE-上發布-Consul-UI-服務" class="headerlink" title="在 GKE 上發布 Consul-UI 服務"></a>在 GKE 上發布 Consul-UI 服務</h2><p>方法有二：</p>
+<ol>
+<li>變更 consul-ui service type</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># vi values.yaml</span></span><br><span class="line">ui:</span><br><span class="line">  service:</span><br><span class="line">    enabled: <span class="literal">true</span></span><br><span class="line">    <span class="built_in">type</span>: LoadBalancer</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生效</span></span><br><span class="line">$ helm upgrade consul ./</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>建立 consul ingress(尚未成功)</li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ingress.yaml</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Ingress</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">consul-ui</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  rules:</span></span><br><span class="line"><span class="attr">  - http:</span></span><br><span class="line"><span class="attr">      paths:</span></span><br><span class="line"><span class="attr">      - backend:</span></span><br><span class="line"><span class="attr">          serviceName:</span> <span class="string">consul-ui</span></span><br><span class="line"><span class="attr">          servicePort:</span> <span class="number">80</span></span><br></pre></td></tr></table></figure>
+<h2 id="於-HELM-Chart-中新增參數-loadBalancerSourceRanges"><a href="#於-HELM-Chart-中新增參數-loadBalancerSourceRanges" class="headerlink" title="於 HELM Chart 中新增參數 loadBalancerSourceRanges"></a>於 HELM Chart 中新增參數 loadBalancerSourceRanges</h2><p>此案例，loadBalancerSourceRanges 原先並未定義在 Chart 中。</p>
+<ul>
+<li>先新增 values.yaml</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">service:</span></span><br><span class="line"><span class="attr">  enabled:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">LoadBalancer</span></span><br><span class="line"><span class="attr">  loadBalancerSourceRanges:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="number">61.216</span><span class="number">.133</span><span class="number">.43</span><span class="string">/32</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>於指定的 templates/ui-service.yaml 中新增參數</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">http</span></span><br><span class="line"><span class="attr">      port:</span> <span class="number">80</span></span><br><span class="line"><span class="attr">      targetPort:</span> <span class="number">8500</span></span><br><span class="line">  <span class="string">&#123;&#123;-</span> <span class="string">if</span> <span class="string">.Values.ui.service.type</span> <span class="string">&#125;&#125;</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">&#123;&#123;</span> <span class="string">.Values.ui.service.type</span> <span class="string">&#125;&#125;</span></span><br><span class="line">  <span class="string">&#123;&#123;-</span> <span class="string">end</span> <span class="string">&#125;&#125;</span></span><br><span class="line">  <span class="string">&#123;&#123;-</span> <span class="string">if</span> <span class="string">.Values.ui.service.loadBalancerSourceRanges</span> <span class="string">&#125;&#125;</span></span><br><span class="line"><span class="attr">  loadBalancerSourceRanges:</span> <span class="string">&#123;&#123;</span> <span class="string">.Values.ui.service.loadBalancerSourceRanges</span> <span class="string">&#125;&#125;</span></span><br><span class="line">  <span class="string">&#123;&#123;-</span> <span class="string">end</span> <span class="string">&#125;&#125;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>更新 helm release-name</li>
+</ul>
+<p><code>helm upgrade consul ./</code></p>
+<hr>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">其他可能用上的指令</span><br><span class="line">```bash</span><br><span class="line"><span class="comment"># list releases</span></span><br><span class="line">helm list</span><br><span class="line"></span><br><span class="line"><span class="comment"># install a chart archive</span></span><br><span class="line">helm install</span><br><span class="line"></span><br><span class="line"><span class="comment"># inspect a chart</span></span><br><span class="line">helm inspect</span><br><span class="line"></span><br><span class="line"><span class="comment"># download a named release</span></span><br><span class="line">helm get</span><br><span class="line"></span><br><span class="line"><span class="comment"># given a release name, delete the release from Kubernetes</span></span><br><span class="line">helm delete</span><br><span class="line"></span><br><span class="line"><span class="comment"># fetch release history</span></span><br><span class="line">helm <span class="built_in">history</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># displays the status of the named release</span></span><br><span class="line">helm status [flags] RELEASE-NAME</span><br><span class="line"></span><br><span class="line"><span class="comment"># test a release</span></span><br><span class="line">helm <span class="built_in">test</span> [RELEASE] [flags]</span><br><span class="line"></span><br><span class="line"><span class="comment"># print the client/server version information</span></span><br><span class="line">helm version</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://tksmisafu.github.io/2019/02/21/Use-helm-publish-K8SServices/" data-id="cjsdylngf0009j7xht39d3ll1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Helm/">Helm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/consul/">consul</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/01/23/k8s-monitoring-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">K8s 監控初體驗</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CD/">CD</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dashboard/">Dashboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GKE/">GKE</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Helm/">Helm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/K8s/">K8s</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Monitor/">Monitor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Prometheus/">Prometheus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Service/">Service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/consul/">consul</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcloud/">gcloud</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/">php</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service/">service</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/service-discovery/">service_discovery</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/CD/" style="font-size: 15px;">CD</a> <a href="/tags/Dashboard/" style="font-size: 10px;">Dashboard</a> <a href="/tags/GKE/" style="font-size: 15px;">GKE</a> <a href="/tags/Helm/" style="font-size: 15px;">Helm</a> <a href="/tags/K8s/" style="font-size: 20px;">K8s</a> <a href="/tags/Monitor/" style="font-size: 10px;">Monitor</a> <a href="/tags/Prometheus/" style="font-size: 10px;">Prometheus</a> <a href="/tags/Service/" style="font-size: 10px;">Service</a> <a href="/tags/consul/" style="font-size: 10px;">consul</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/gcloud/" style="font-size: 10px;">gcloud</a> <a href="/tags/php/" style="font-size: 10px;">php</a> <a href="/tags/service/" style="font-size: 10px;">service</a> <a href="/tags/service-discovery/" style="font-size: 15px;">service_discovery</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/02/21/Use-helm-publish-K8SServices/">使用 HELM 來發布服務</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/23/k8s-monitoring-1/">K8s 監控初體驗</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/22/Gcloud-SDK-Note/">Gcloud SDK 初體驗</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/22/GKE-node-migration/">GKE node migration</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/18/k8s-dashboard-1/">人生第一個 K8s Dashboard ^.^</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
