@@ -16,7 +16,7 @@
 <meta property="og:description" content="建置完成 K8s 環境後，總是需要有個操作介面，給予管理人員使用。官方有提供 Dashboard GUI 介面，下面紀錄安裝過程～ 起手式 deploy dashboard我是參考官網資訊頁來建置 下載 kubernetes-dashboard.yaml1$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/s">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://tksmisafu.github.io/2019/01/18/k8s-dashboard-1/new-dashboard.jpg">
-<meta property="og:updated_time" content="2019-01-18T14:31:51.461Z">
+<meta property="og:updated_time" content="2019-02-23T07:17:53.395Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="人生第一個 K8s Dashboard ^.^">
 <meta name="twitter:description" content="建置完成 K8s 環境後，總是需要有個操作介面，給予管理人員使用。官方有提供 Dashboard GUI 介面，下面紀錄安裝過程～ 起手式 deploy dashboard我是參考官網資訊頁來建置 下載 kubernetes-dashboard.yaml1$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/s">
@@ -133,11 +133,11 @@
 <li><p>opening the config-demo file, you can use the config view command.</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo view</span><br><span class="line"></span><br><span class="line"><span class="comment"># To see only the configuration information associated with the current context, use the --minify flag.</span></span><br><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo view --minify</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>Set the current-context  to <code>dev-frontend</code>:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo use-context dev-frontend</span><br></pre></td></tr></table></figure>
+<li><p>Set the current-context  to <code>dev-frontend</code>:<br><code>$ kubectl config --kubeconfig=kubeconfig-demo use-context dev-frontend</code></p>
 </li>
-<li><p><em>Change</em> the current context to <code>dev-storage</code>:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl config --kubeconfig=kubeconfig-demo use-context dev-storage</span><br></pre></td></tr></table></figure>
+<li><p><em>Change</em> the current context to <code>dev-storage</code>:<br><code>$ kubectl config --kubeconfig=kubeconfig-demo use-context dev-storage</code></p>
+</li>
+<li><p>Delete the context<br><code>kubectl config delete-context kubernetes-admin@kubernetes</code></p>
 </li>
 </ul>
 <blockquote>
